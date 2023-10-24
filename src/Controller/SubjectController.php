@@ -148,6 +148,7 @@ class SubjectController extends AbstractController
                             $group->setType($subjectCode);
 
                             if ($subject) {
+                                $group->setHourlyRate($row[5]);
                                 $group->setSubject($subject);
                                 $subject->addGroup($group);
                                 $entityManager->persist($group);
