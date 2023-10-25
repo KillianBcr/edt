@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Group;
 use App\Entity\NbGroup;
 use App\Entity\Subject;
+use App\Entity\Week;
 use App\Entity\Tag;
 use App\Repository\SemesterRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -90,6 +91,13 @@ class SubjectController extends AbstractController
                                 break;
                             }
                         }
+
+                        $weekNumbers = [];
+                        foreach ($data[0] as $value) {
+                            if (is_numeric($value)) {
+                                $weekNumbers[] = $value;
+                            }
+                        }
                         foreach ($data as $row) {
                             if (empty($row[4]) || str_starts_with($row[1], 'BUT')) {
                                 continue;
@@ -103,6 +111,7 @@ class SubjectController extends AbstractController
                             $name = $row[2];
                             $semesterNumber = (int) $row[1][2];
                             $tag = $row[7];
+
 
                             $semester = $semesterRepository->findOneBy(['name' => "Semestre $semesterNumber"]);
 
@@ -147,14 +156,21 @@ class SubjectController extends AbstractController
                             $group = new Group();
                             $group->setType($subjectCode);
 
-                            if ($subject) {
-                                $group->setHourlyRate($row[5]);
-                                $group->setSubject($subject);
-                                $subject->addGroup($group);
-                                $entityManager->persist($group);
+                            $group->setHourlyRate($row[5]);
+                            $group->setSubject($subject);
+                            $subject->addGroup($group);
+                            $entityManager->persist($group);
+                            $entityManager->flush();
+
+                            foreach ($weekNumbers as $index => $weekNumber) {
+                                $week = new Week();
+                                $numberHours = (float) $row[$index];
+                                $week->setNumberHours($numberHours);
+                                $week->setWeekNumber($weekNumber);
+                                $week->addSubject($subject);
+
+                                $entityManager->persist($week);
                                 $entityManager->flush();
-                            } else {
-                                $this->addFlash('error', 'No subject found for group: '.$subjectCode);
                             }
 
                             $nbGroup = new NbGroup();
@@ -162,6 +178,7 @@ class SubjectController extends AbstractController
                             $group->addNbGroup($nbGroup);
                             $entityManager->persist($nbGroup);
                             $entityManager->flush();
+
                         }
                     } else {
                         $this->addFlash('error', 'No data found in sheet: '.$sheetName);
