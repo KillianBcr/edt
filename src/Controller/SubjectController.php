@@ -162,15 +162,22 @@ class SubjectController extends AbstractController
                             $entityManager->persist($group);
                             $entityManager->flush();
 
-                            foreach ($weekNumbers as $index => $weekNumber) {
-                                $week = new Week();
-                                $numberHours = (float) $row[$index];
-                                $week->setNumberHours($numberHours);
-                                $week->setWeekNumber($weekNumber);
-                                $week->addSubject($subject);
+                            for ($i = 5; $i < count($row); ++$i) {
+                                if (isset($weekNumbers[$i - 5])) {
+                                    $weekNumber = $weekNumbers[$i - 5];
+                                    $numberHours = (float) $row[$i];
+                                    $week = $entityManager->getRepository(Week::class)->findOneBy([
+                                        'weekNumber' => $weekNumber,
+                                        'numberHours' => $numberHours,
+                                    ]);
 
-                                $entityManager->persist($week);
-                                $entityManager->flush();
+                                    if (!$week) {
+                                        $week = new Week();
+                                        $week->setNumberHours($numberHours);
+                                        $week->setWeekNumber($weekNumber);
+                                        $entityManager->persist($week);
+                                    }
+                                }
                             }
 
                             $nbGroup = new NbGroup();
