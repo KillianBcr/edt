@@ -47,7 +47,7 @@ class Week
 
     #[ORM\Column]
     #[Groups(['get_Week', 'set_Week'])]
-    private ?int $numberHours = null;
+    private ?float $numberHours = null;
 
     #[ORM\Column]
     #[Groups(['get_Week', 'set_Week'])]
