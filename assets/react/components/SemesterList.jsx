@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {fetchSemesters, fetchUsers} from '../services/api';
+import {fetchSemesters} from '../services/api';
 import {Link} from 'wouter';
 import "../../styles/semesterList.css"
-import Button from "@mui/material/Button";
 import PopUpTags from "./AddTags";
 function Semesterlist() {
     const [semesters, setSemesters] = useState(null);
