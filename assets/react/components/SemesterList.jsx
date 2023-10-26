@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {fetchSemesters, fetchUsers} from '../services/api';
 import {Link} from 'wouter';
 import "../../styles/semesterList.css"
+import Button from "@mui/material/Button";
+import PopUpTags from "./AddTags";
 function Semesterlist() {
     const [semesters, setSemesters] = useState(null);
 
@@ -12,17 +14,22 @@ function Semesterlist() {
     }, []);
 
     return (
-        <div className={"semesterList"}>
-            {semesters ===null ? 'Loading...' :
-                semesters.map((semester) => (
-                    <div key={semester.id}>
-                        <Link href={`/react/semesters/${semester.id}`}>
-                            {semester.name}
-                        </Link>
-                    </div>
+        <div className={"listAndButton"}>
+            <div className={"semesterList"}>
+                {semesters ===null ? 'Loading...' :
+                    semesters.map((semester) => (
+                        <div key={semester.id}>
+                            <Link href={`/react/semesters/${semester.id}`}>
+                                {semester.name}
+                            </Link>
+                        </div>
+                        )
                     )
-                )
-            }
+                }
+            </div>
+            <div className={"tagsButton"}>
+                <PopUpTags/>
+            </div>
         </div>
     );
 }
