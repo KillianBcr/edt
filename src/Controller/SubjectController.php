@@ -165,18 +165,17 @@ class SubjectController extends AbstractController
                             for ($i = 5; $i < count($row); ++$i) {
                                 if (isset($weekNumbers[$i - 5])) {
                                     $weekNumber = $weekNumbers[$i - 5];
-                                    $numberHours = (float) $row[$i];
-                                    $week = $entityManager->getRepository(Week::class)->findOneBy([
-                                        'weekNumber' => $weekNumber,
-                                        'numberHours' => $numberHours,
-                                    ]);
-
-                                    if (!$week) {
-                                        $week = new Week();
-                                        $week->setNumberHours($numberHours);
-                                        $week->setWeekNumber($weekNumber);
-                                        $entityManager->persist($week);
+                                    var_dump($name, $weekNumber, $row[$i + 2]);
+                                    $numberHours = (float) $row[$i + 2];
+                                    if ($numberHours < 0.1) {
+                                        continue;
                                     }
+                                    $week = new Week();
+                                    $week->setNumberHours($numberHours);
+                                    $week->setWeekNumber($weekNumber);
+                                    $entityManager->persist($week);
+
+                                    $subject->addWeek($week);
                                 }
                             }
 
