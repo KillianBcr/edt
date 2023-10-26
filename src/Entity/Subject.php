@@ -71,23 +71,24 @@ class Subject
     #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
     private ?Semester $semester = null;
 
-    #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'Subject')]
-    private Collection $weeks;
-
     #[ORM\ManyToMany(targetEntity: NbGroup::class, inversedBy: 'subjects')]
     private Collection $idNbGroup;
 
     #[ORM\OneToMany(mappedBy: 'subject', targetEntity: Group::class, cascade: ['remove'])]
     private Collection $groups;
+
+    #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'subject')]
+    private Collection $weeks;
+
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'subjects')]
     #[Groups(['get_Subject', 'get_Semester'])]
     private Collection $tags;
 
     public function __construct()
     {
-        $this->weeks = new ArrayCollection();
         $this->idNbGroup = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->weeks = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
@@ -191,30 +192,6 @@ class Subject
     }
 
     /**
-     * @return Collection<int, NbGroup>
-     */
-    public function getIdNbGroup(): Collection
-    {
-        return $this->idNbGroup;
-    }
-
-    public function addIdNbGroup(NbGroup $idNbGroup): static
-    {
-        if (!$this->idNbGroup->contains($idNbGroup)) {
-            $this->idNbGroup->add($idNbGroup);
-        }
-
-        return $this;
-    }
-
-    public function removeIdNbGroup(NbGroup $idNbGroup): static
-    {
-        $this->idNbGroup->removeElement($idNbGroup);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Week>
      */
     public function getWeeks(): Collection
@@ -240,7 +217,29 @@ class Subject
 
         return $this;
     }
+    /**
+     * @return Collection<int, NbGroup>
+     */
+    public function getIdNbGroup(): Collection
+    {
+        return $this->idNbGroup;
+    }
 
+    public function addIdNbGroup(NbGroup $idNbGroup): static
+    {
+        if (!$this->idNbGroup->contains($idNbGroup)) {
+            $this->idNbGroup->add($idNbGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeIdNbGroup(NbGroup $idNbGroup): static
+    {
+        $this->idNbGroup->removeElement($idNbGroup);
+
+        return $this;
+    }
     /**
      * @return Collection<int, Tag>
      */
