@@ -194,7 +194,6 @@ function Semester() {
                                                             .map((group) => (
                                                                 <ul key={group.id}>
                                                                     <li className="groups">
-
                                                                         {nbGroups === null ? (
                                                                             'Aucun Nombre De Groupe Trouvé'
                                                                         ) : (
@@ -206,9 +205,8 @@ function Semester() {
                                                                                     } else {
                                                                                         const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
                                                                                         const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
-
-                                                                                            var color = "black";
-                                                                                    var picto = "";
+                                                                                        var color = "black";
+                                                                                        var picto = "";
                                                                                         if (count > filteredNbGroup.nbGroup){
                                                                                             color = "red";
                                                                                             picto = "🔴";
@@ -221,7 +219,7 @@ function Semester() {
                                                                                         }
                                                                                         return (
                                                                                             <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup}</span>
-                                                                                    );
+                                                                                        );
                                                                                     }
                                                                                 })
                                                                         )}
@@ -239,12 +237,19 @@ function Semester() {
                                                 </div>
                                             </div>
                                         ) : null}
+                                        {subject.tag.map(async (tag) => {
+                                            const tagData = await getSubjectTag(tag.split('/').pop());
+                                            return (
+                                                <div>{tagData.name}</div>
+                                            );
+                                        })}
                                     </li>
                                 );
                             } else {
                                 return null
                             }
-                        })}
+                            })}
+
                     </ul>
                 </div>
             )}
@@ -253,3 +258,4 @@ function Semester() {
 }
 
 export default Semester;
+

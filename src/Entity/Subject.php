@@ -71,6 +71,7 @@ class Subject
     private Collection $idNbGroup;
 
     #[ORM\OneToMany(mappedBy: 'subject', targetEntity: Group::class, cascade: ['remove'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
     private Collection $groups;
 
     #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'subject')]
