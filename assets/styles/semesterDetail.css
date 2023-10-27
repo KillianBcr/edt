@@ -92,6 +92,24 @@ form {
     margin-top: 10px;
 }
 
+
+.tag {
+    display: inline-block;
+    background-color: green;
+    color: #fff;
+    padding: 4px 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 10px;
+}
+
+
+.tag:last-child {
+    margin-right: 0;
+}
+
+
 @media screen and (max-width: 800px) {
     .semester-li {
         width: 100%;
