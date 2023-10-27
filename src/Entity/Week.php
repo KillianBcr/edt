@@ -69,12 +69,12 @@ class Week
         return $this->id;
     }
 
-    public function getNumberHours(): ?int
+    public function getNumberHours(): ?float
     {
         return $this->numberHours;
     }
 
-    public function setNumberHours(int $numberHours): static
+    public function setNumberHours(float $numberHours): static
     {
         $this->numberHours = $numberHours;
 
