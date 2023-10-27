@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Group;
 use App\Entity\NbGroup;
 use App\Entity\Subject;
+use App\Entity\SubjectCode;
 use App\Entity\Week;
 use App\Entity\Tag;
 use App\Repository\SemesterRepository;
+use App\Repository\SubjectCodeRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +27,7 @@ class SubjectController extends AbstractController
     }
 
     #[Route('/upload', name: 'app_upload')]
-    public function upload(Request $request, SemesterRepository $semesterRepository): Response
+    public function upload(Request $request, SemesterRepository $semesterRepository, SubjectCodeRepository $subjectCodeRepository): Response
     {
         if ($request->isMethod('POST')) {
             $file = $request->files->get('file');
@@ -115,8 +117,9 @@ class SubjectController extends AbstractController
 
                             $semester = $semesterRepository->findOneBy(['name' => "Semestre $semesterNumber"]);
 
+                            $subjectCode = $subjectCodeRepository->findOrCreateByCode($subjectCode);
+
                             $existingSubject = $subjectRepository->findOneBy([
-                                'subjectCode' => $subjectCode,
                                 'name' => $name,
                             ]);
 
@@ -166,7 +169,7 @@ class SubjectController extends AbstractController
                                 if (isset($weekNumbers[$i - 5])) {
                                     $weekNumber = $weekNumbers[$i - 5];
                                     $numberHours = (float) $row[$i + 2];
-                                    if ($numberHours < 0.1 || strlen($numberHours) > 4) {
+                                    if (0 == $numberHours || strlen($numberHours) > 4) {
                                         continue;
                                     }
                                     $existingWeek = $entityManager->getRepository(Week::class)->findOneBy([
