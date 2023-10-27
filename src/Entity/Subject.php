@@ -47,19 +47,19 @@ class Subject
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $firstWeek = null;
 
     #[ORM\Column]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $lastWeek = null;
 
     #[ORM\Column(length: 40)]
@@ -68,7 +68,7 @@ class Subject
 
     #[ORM\ManyToOne(inversedBy: 'subjects')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?Semester $semester = null;
 
     #[ORM\ManyToMany(targetEntity: NbGroup::class, inversedBy: 'subjects')]
@@ -83,6 +83,11 @@ class Subject
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'subjects')]
     #[Groups(['get_Subject', 'get_Semester'])]
     private Collection $tags;
+
+    #[ORM\ManyToOne(inversedBy: 'subjects')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode'])]
+    private ?SubjectCode $subjectCode = null;
 
     public function __construct()
     {
