@@ -95,7 +95,6 @@ form {
 
 .tag {
     display: inline-block;
-    background-color: green;
     color: #fff;
     padding: 4px 8px;
     margin-right: 8px;
@@ -104,6 +103,13 @@ form {
     margin: 10px;
 }
 
+.tag:nth-child(1) {
+    background-color: red;
+}
+
+.tag:nth-child(2) {
+    background-color: green;
+}
 
 .tag:last-child {
     margin-right: 0;
