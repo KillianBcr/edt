@@ -46,27 +46,61 @@ class Year
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['year:read'])]
+    #[Groups(['get_Year'])]
     private ?int $id = null;
 
+    #[ORM\Column]
+    #[Groups(['get_Year'])]
+    private ?int $startYear = null;
+
+    #[ORM\Column]
+    #[Groups(['get_Year'])]
+    private ?int $endYear = null;
+
     #[ORM\Column(length: 20)]
-    #[Groups(['year:read', 'year:write'])]
-    private ?string $season = null;
+    #[Groups(['get_Year'])]
+    private ?string $academicYear = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getSeason(): ?string
+    public function getStartYear(): ?int
     {
-        return $this->season;
+        return $this->startYear;
     }
 
-    #[Groups(['year:write'])]
-    public function setSeason(string $season): static
+    #[Groups(['get_Year', 'set_Year'])]
+    public function setStartYear(int $startYear): static
     {
-        $this->season = $season;
+        $this->startYear = $startYear;
+
+        return $this;
+    }
+
+    public function getEndYear(): ?int
+    {
+        return $this->endYear;
+    }
+
+    #[Groups(['get_Year', 'set_Year'])]
+    public function setEndYear(int $endYear): static
+    {
+        $this->endYear = $endYear;
+
+        return $this;
+    }
+
+    public function getAcademicYear(): ?string
+    {
+        return $this->academicYear;
+    }
+
+    #[Groups(['get_Year', 'set_Year'])]
+    public function setAcademicYear(string $academicYear): static
+    {
+        $this->academicYear = $academicYear;
 
         return $this;
     }
