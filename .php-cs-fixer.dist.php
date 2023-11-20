@@ -1,13 +1,13 @@
 <?php
 
-$finder = (new PhpCsFixer\Finder())
+$finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->exclude('var')
-;
+    ->exclude(['var', 'tests/Support/_generated']);
 
-return (new PhpCsFixer\Config())
+$config = new PhpCsFixer\Config();
+
+return $config
     ->setRules([
         '@Symfony' => true,
     ])
-    ->setFinder($finder)
-;
+    ->setFinder($finder);
