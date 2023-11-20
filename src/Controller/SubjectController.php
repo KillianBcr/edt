@@ -104,7 +104,6 @@ class SubjectController extends AbstractController
                             $semesterNumber = (int) $row[1][2];
                             $tag = $row[7];
 
-
                             $semester = $semesterRepository->findOneBy(['name' => "Semestre $semesterNumber"]);
 
                             $existingSubject = $subjectRepository->findOneBy([
@@ -162,7 +161,6 @@ class SubjectController extends AbstractController
                             $group->addNbGroup($nbGroup);
                             $entityManager->persist($nbGroup);
                             $entityManager->flush();
-
                         }
                     } else {
                         $this->addFlash('error', 'No data found in sheet: '.$sheetName);

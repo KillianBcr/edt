@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -58,7 +57,6 @@ class Group
 
     #[ORM\OneToMany(mappedBy: 'groupeType', targetEntity: Wish::class)]
     private Collection $wishes;
-
 
     public function __construct()
     {
@@ -159,5 +157,4 @@ class Group
 
         return $this;
     }
-
 }

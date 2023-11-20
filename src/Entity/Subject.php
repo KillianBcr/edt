@@ -83,8 +83,6 @@ class Subject
     #[Groups(['get_Subject', 'get_Semester'])]
     private Collection $tags;
 
-
-
     public function __construct()
     {
         $this->weeks = new ArrayCollection();
@@ -149,7 +147,6 @@ class Subject
 
         return $this;
     }
-
 
     public function getSemester(): ?Semester
     {
@@ -267,5 +264,4 @@ class Subject
 
         return $this;
     }
-
 }

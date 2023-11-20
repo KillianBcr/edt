@@ -17,6 +17,7 @@ class PeriodController extends AbstractController
     public function index(PeriodRepository $repository): Response
     {
         $periods = $repository->findAll();
+
         return $this->render('period/index.html.twig', [
             'controller_name' => 'PeriodController',
             'periods' => $periods,
@@ -51,6 +52,7 @@ class PeriodController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $manager->flush();
+
             return $this->redirectToRoute('app_period');
         }
 
@@ -64,6 +66,7 @@ class PeriodController extends AbstractController
     {
         $manager->remove($period);
         $manager->flush();
+
         return $this->redirectToRoute('app_period');
     }
 }

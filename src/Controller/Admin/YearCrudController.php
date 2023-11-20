@@ -28,7 +28,6 @@ class YearCrudController extends AbstractCrudController
             IdField::new('id')
                 ->hideOnForm(),
             TextField::new('season'),
-
         ];
     }
 }

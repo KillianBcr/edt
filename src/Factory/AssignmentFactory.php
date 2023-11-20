@@ -29,7 +29,7 @@ use Zenstruck\Foundry\RepositoryProxy;
  */
 final class AssignmentFactory extends ModelFactory
 {
-        public function __construct()
+    public function __construct()
     {
         parent::__construct();
     }

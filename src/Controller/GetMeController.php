@@ -16,5 +16,3 @@ class GetMeController extends AbstractController
         return $user;
     }
 }
-
-
