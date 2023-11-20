@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Wish;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,13 +15,17 @@ class WishType extends AbstractType
     {
         $builder
             ->add('chosenGroups', IntegerType::class, [
-                'required' => false,
-                'label'=>'Nombre de groupe'
-            ])
-            ->add('Modifier', SubmitType::class, [
                 'attr' => [
-                    'class' => 'send',
+                    'class' => 'form-control',
                 ],
+                'required' => false,
+                'label' => 'Nombre de groupe',
+            ])
+            ->add('submit', SubmitType::class, [
+                'attr' => [
+                    'class' => 'btn btn-primary mt-4',
+                ],
+                'label' => 'Modifier',
             ]);
     }
 
