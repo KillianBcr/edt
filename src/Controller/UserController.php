@@ -19,6 +19,7 @@ class UserController extends AbstractController
     public function index(UserRepository $repository): Response
     {
         $users = $repository->findAll();
+
         return $this->render('user/index.html.twig', [
             'users' => $users,
         ]);
@@ -29,13 +30,13 @@ class UserController extends AbstractController
             'id' => "\d+",
         ]
     )]
-    public function showWishes( User $user): Response
+    public function showWishes(User $user): Response
     {
         $wishes = $user->getWish();
-        return $this->render('user/showWish.html.twig',
-            ['wishes' => $wishes, 'user'=> $user]);
-    }
 
+        return $this->render('user/showWish.html.twig',
+            ['wishes' => $wishes, 'user' => $user]);
+    }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/me', name: 'app_user_show')]
@@ -47,6 +48,7 @@ class UserController extends AbstractController
             throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page');
         }
         $userId = $user->getId();
+
         return $this->render('user/show.html.twig', [
             'user' => $user,
         ]);
