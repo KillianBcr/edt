@@ -31,7 +31,7 @@ export const fetchGroupsBySubject = async (subjectId) => {
         return data['hydra:member'];
     } catch (error) {
         console.error('Error in fetchGroupsBySubject:', error);
-        throw error; // Ajoute cette ligne pour propager l'erreur
+        throw error;
     }
 };
 export function getMe()
@@ -319,5 +319,48 @@ export const getCurrentWishYear = async () => {
 
 
 
+
+
+export function addTagToDatabase(tagName) {
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: tagName }),
+    };
+
+    return fetch(`${BASE_URL}/tags`, requestOptions)
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject('Failed to add tag to the database');
+        })
+        .catch((error) => {
+            console.error('Error adding tag:', error);
+            return Promise.reject('Failed to add tag to the database');
+        });
+}
+
+export function deleteTagFromDatabase(tagId) {
+    const requestOptions = {
+        method: 'DELETE',
+    };
+
+    return fetch(`${BASE_URL}/tags/${tagId}`, requestOptions)
+        .then((response) => {
+            if (response.ok) {
+                console.log(`Tag with ID ${tagId} deleted successfully`);
+            } else {
+                console.error('Error deleting tag:', response.status, response.statusText);
+                return Promise.reject('Failed to delete tag from the database');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            return Promise.reject('Failed to delete tag from the database');
+        });
+}
 
 

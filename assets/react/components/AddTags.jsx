@@ -9,6 +9,7 @@ import TagForm from "./Tags";
 
 export default function PopUpTags() {
     const [open, setOpen] = React.useState(false);
+    const [databaseTags, setDatabaseTags] = React.useState([]);
 
     const handleClickOpen = () => {
         setOpen(true);
