@@ -10,7 +10,9 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\WishRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WishRepository::class)]
@@ -36,6 +38,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
     ]
 )]
+
+
 class Wish
 {
     #[ORM\Id]
@@ -58,6 +62,9 @@ class Wish
 
     #[ORM\ManyToOne(inversedBy: 'wish')]
     private ?User $wishUser = null;
+
+    #[ORM\Column]
+    private ?bool $isAccepted = false;
 
     public function getId(): ?int
     {
@@ -115,6 +122,18 @@ class Wish
     public function setWishUser(?User $wishUser): static
     {
         $this->wishUser = $wishUser;
+
+        return $this;
+    }
+
+    public function isIsAccepted(): ?bool
+    {
+        return $this->isAccepted;
+    }
+
+    public function setIsAccepted(?bool $isAccepted): static
+    {
+        $this->isAccepted = $isAccepted;
 
         return $this;
     }
