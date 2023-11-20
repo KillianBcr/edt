@@ -7,7 +7,6 @@ h1 {
     text-align: center;
     font-size: 32px;
     color: #333;
-    margin-top: 20px;
     padding: 30px;
 }
 
@@ -33,6 +32,7 @@ h2 {
     padding: 15px;
     text-align: center;
     transition: transform 0.2s;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
 }
 
 .card:hover {
@@ -97,4 +97,15 @@ dd {
 .row {
     max-width: 1000px;
     margin: 0 auto;
+}
+
+.form-control{
+    background-color: #d9d9d9;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 10px;
+    padding: 10px;
+    width: 90%;
+    margin-bottom: 10px;
 }

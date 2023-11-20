@@ -1,14 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Voeux de {{ user.firstName }} {{ user.LastName }} {% endblock %}
-
+{% block title %}Voeux de {{ user.firstName }} {{ user.lastName }} {% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/wish.css') }}">
 {% endblock %}
 
 {% block body %}
+
     <h1>Voeux de {{ user.firstName }} {{ user.lastName }}</h1>
+
     <div class="row">
         {% if wishes is empty %}
             <h2>Aucun voeux pour l'utilisateur</h2>
@@ -17,18 +18,26 @@
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title">Voeux {{ wish.id }}</h2>
+                            <h2 class="card-title">
+                                {% if wish.subjectId.name|length > 15 %}
+                                    {{ wish.subjectId.name|slice(0, 15) ~ '...' }}
+                                {% else %}
+                                    {{ wish.subjectId.name }}
+                                {% endif %}
+                            </h2>
                             <dl>
-                                <dt>Matière</dt>
-                                <dd>{{ wish.subjectId.name }}</dd>
+                                <dt>Code</dt>
+                                <dd>{{ wish.subjectId.subjectCode }}</dd>
                                 <dt>Détail</dt>
                                 <dd>{{ wish.chosenGroups }} groupe(s) de {{ wish.groupeType.type }}</dd>
+                                <dt>Modification</dt>
+                                {{ render(controller('App\\Controller\\WishController::edit', {'id': wish.id})) }}
                             </dl>
-                            {{ render(controller('App\\Controller\\WishController::edit', {'id': wish.id})) }}
                         </div>
                     </div>
                 </div>
             {% endfor %}
         {% endif %}
     </div>
+
 {% endblock %}

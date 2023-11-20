@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 class WishType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -20,6 +20,15 @@ class WishType extends AbstractType
                 ],
                 'required' => false,
                 'label' => 'Nombre de groupe',
+            ])
+            ->add('isAccepted', ChoiceType::class, [
+                'label' => '  ',
+                'choices' => [
+                    'Accepter' => true,
+                    'Refuser' => false,
+                ],
+                'expanded' => true,
+                'multiple' => false,
             ])
             ->add('submit', SubmitType::class, [
                 'attr' => [

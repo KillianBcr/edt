@@ -37,7 +37,6 @@ class WishController extends AbstractController
             $subjectId = $request->query->get('subjectId');
 
             if (null !== $subjectId) {
-                // Utilisez l'EntityManager pour charger l'entité Subject
                 $subject = $manager->getRepository(Subject::class)->find($subjectId);
 
                 if (null !== $subject) {
