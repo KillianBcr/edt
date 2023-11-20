@@ -96,7 +96,6 @@
         ],
         "test:cs": "php-cs-fixer fix --dry-run --diff -v",
         "test": [
-            "@test:cs",
             "composer test:codeception"
         ],
         "fix:cs": [
