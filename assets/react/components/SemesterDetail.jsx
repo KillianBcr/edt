@@ -149,13 +149,13 @@ function Semester() {
                                                                                 } else {
                                                                                     const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
                                                                                     const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
-                                                                                    var color = "dark";
+                                                                                    var color = "black";
                                                                                     if (count > filteredNbGroup.nbGroup){
                                                                                         color = "red";
                                                                                     }else if (count < filteredNbGroup.nbGroup){
-                                                                                        color = "green";
+                                                                                        color = "orange";
                                                                                     }else{
-                                                                                        color = "black"
+                                                                                        color = "green"
                                                                                     }
                                                                                     return (
                                                                                         <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup}</span>
