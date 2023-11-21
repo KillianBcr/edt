@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -68,6 +69,9 @@ class Group
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['group:read'])]
     private ?Subject $subject = null;
+
+    #[ORM\Column]
+    private ?int $hourlyRate = null;
 
     #[ORM\ManyToMany(targetEntity: NbGroup::class, mappedBy: 'groups')]
     private Collection $nbGroups;
@@ -127,6 +131,18 @@ class Group
     public function setSubject(?Subject $subject): static
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getHourlyRate(): ?int
+    {
+        return $this->hourlyRate;
+    }
+
+    public function setHourlyRate(int $hourlyRate): static
+    {
+        $this->hourlyRate = $hourlyRate;
 
         return $this;
     }

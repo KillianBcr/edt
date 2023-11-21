@@ -13,9 +13,12 @@ use App\Repository\WeekRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WeekRepository::class)]
+#[UniqueEntity(fields: ['weekNumber', 'numberHours'], message: 'Cette semaine existe déjà')]
+#[ApiResource]
 #[ApiResource(
     operations: [
         new Get(
@@ -47,18 +50,18 @@ class Week
 
     #[ORM\Column]
     #[Groups(['get_Week', 'set_Week'])]
-    private ?int $numberHours = null;
+    private ?float $numberHours = null;
 
     #[ORM\Column]
     #[Groups(['get_Week', 'set_Week'])]
     private ?int $weekNumber = null;
 
     #[ORM\ManyToMany(targetEntity: Subject::class, inversedBy: 'weeks')]
-    private Collection $Subject;
+    private Collection $subject;
 
     public function __construct()
     {
-        $this->Subject = new ArrayCollection();
+        $this->subject = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -66,12 +69,12 @@ class Week
         return $this->id;
     }
 
-    public function getNumberHours(): ?int
+    public function getNumberHours(): ?float
     {
         return $this->numberHours;
     }
 
-    public function setNumberHours(int $numberHours): static
+    public function setNumberHours(float $numberHours): static
     {
         $this->numberHours = $numberHours;
 
@@ -95,13 +98,14 @@ class Week
      */
     public function getSubject(): Collection
     {
-        return $this->Subject;
+        return $this->subject;
     }
 
     public function addSubject(Subject $subject): static
     {
-        if (!$this->Subject->contains($subject)) {
-            $this->Subject->add($subject);
+        if (!$this->subject->contains($subject)) {
+            $this->subject->add($subject);
+            $subject->addWeek($this);
         }
 
         return $this;
@@ -109,7 +113,16 @@ class Week
 
     public function removeSubject(Subject $subject): static
     {
-        $this->Subject->removeElement($subject);
+        $this->subject->removeElement($subject);
+
+        return $this;
+    }
+
+    public function addSubjectWeek(Subject $subject): static
+    {
+        if (!$this->subject->contains($subject)) {
+            $this->subject->add($subject);
+        }
 
         return $this;
     }

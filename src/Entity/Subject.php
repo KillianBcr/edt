@@ -47,19 +47,19 @@ class Subject
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $firstWeek = null;
 
     #[ORM\Column]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $lastWeek = null;
 
     #[ORM\Column(length: 40)]
@@ -68,26 +68,37 @@ class Subject
 
     #[ORM\ManyToOne(inversedBy: 'subjects')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?Semester $semester = null;
-
-    #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'Subject')]
-    private Collection $weeks;
 
     #[ORM\ManyToMany(targetEntity: NbGroup::class, inversedBy: 'subjects')]
     private Collection $idNbGroup;
 
     #[ORM\OneToMany(mappedBy: 'subject', targetEntity: Group::class, cascade: ['remove'])]
     private Collection $groups;
+
+    #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'subject')]
+    private Collection $weeks;
+
     #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'subjects')]
     #[Groups(['get_Subject', 'get_Semester'])]
     private Collection $tags;
 
+    #[ORM\ManyToOne(inversedBy: 'subjects')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode'])]
+    private ?SubjectCode $subjectCode = null;
+
+    #[ORM\ManyToOne(inversedBy: 'subjects')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Year'])]
+    private ?Year $academicYear = null;
+
     public function __construct()
     {
-        $this->weeks = new ArrayCollection();
         $this->idNbGroup = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->weeks = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
@@ -191,30 +202,6 @@ class Subject
     }
 
     /**
-     * @return Collection<int, NbGroup>
-     */
-    public function getIdNbGroup(): Collection
-    {
-        return $this->idNbGroup;
-    }
-
-    public function addIdNbGroup(NbGroup $idNbGroup): static
-    {
-        if (!$this->idNbGroup->contains($idNbGroup)) {
-            $this->idNbGroup->add($idNbGroup);
-        }
-
-        return $this;
-    }
-
-    public function removeIdNbGroup(NbGroup $idNbGroup): static
-    {
-        $this->idNbGroup->removeElement($idNbGroup);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Week>
      */
     public function getWeeks(): Collection
@@ -240,7 +227,29 @@ class Subject
 
         return $this;
     }
+    /**
+     * @return Collection<int, NbGroup>
+     */
+    public function getIdNbGroup(): Collection
+    {
+        return $this->idNbGroup;
+    }
 
+    public function addIdNbGroup(NbGroup $idNbGroup): static
+    {
+        if (!$this->idNbGroup->contains($idNbGroup)) {
+            $this->idNbGroup->add($idNbGroup);
+        }
+
+        return $this;
+    }
+
+    public function removeIdNbGroup(NbGroup $idNbGroup): static
+    {
+        $this->idNbGroup->removeElement($idNbGroup);
+
+        return $this;
+    }
     /**
      * @return Collection<int, Tag>
      */
@@ -261,6 +270,18 @@ class Subject
     public function removeTag(Tag $tag): static
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function getAcademicYear(): ?Year
+    {
+        return $this->academicYear;
+    }
+
+    public function setAcademicYear(?Year $academicYear): static
+    {
+        $this->academicYear = $academicYear;
 
         return $this;
     }
