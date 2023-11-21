@@ -18,7 +18,7 @@ body{
     left: 0;
     width: 100%;
     padding: 20px 100px;
-    background: white;
+    background: #4a3d8a;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -27,7 +27,7 @@ body{
 
 .logo {
     font-size: 32px;
-    color: black;
+    color: white;
     text-decoration: none;
     font-weight: 700;
 }
@@ -35,7 +35,7 @@ body{
 .navbar a {
     position: relative;
     font-size: 18px;
-    color: black;
+    color: white;
     font-weight: 500;
     text-decoration: none;
     margin-left: 40px;
@@ -48,7 +48,7 @@ body{
     left: 0;
     width: 0;
     height: 2px;
-    background: #5B0888;
+    background: white;
     transition: .3s;
 }
 

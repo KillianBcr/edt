@@ -121,14 +121,14 @@ function Repartition() {
                         <td>{wish.subjectName}</td>
                         <td>{wish.chosenGroups} groupes de {wish.groupName} </td>
                         <td>
-                            <button className="modifier-button" onClick={() => handleOpen(wish.id)}>Modifier</button>
-                            <button className="supprimer-button" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
+                            <button className="btn btn-primary" onClick={() => handleOpen(wish.id)}>Modifier</button>
+                            <button className="btn btn-danger" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
                         </td>
                     </tr>
                 ))}
                 <tr>
                     <td>
-                        <Link to="/react/semesters" className="ajouter-button">Ajouter des heures</Link>
+                        <Link to="/react/semesters" className="btn btn-primary">Ajouter des heures</Link>
                     </td>
                 </tr>
                 </tbody>
