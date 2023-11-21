@@ -130,7 +130,7 @@ function Semester() {
                             return (
                                 <li key={subject['@id']} className="semester-li">
                                     <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
-                                    {(userData && userData.roles && userData.roles.includes("ROLE_ADMIN")) ? (
+                                    {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
                                         <div>
                                             <div className="groupe-container">
                                                 {groups === null ? 'Aucun Groupe Trouvé' : (
