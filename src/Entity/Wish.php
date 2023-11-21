@@ -59,6 +59,9 @@ class Wish
     #[ORM\ManyToOne(inversedBy: 'wish')]
     private ?User $wishUser = null;
 
+    #[ORM\Column]
+    private ?bool $isAccepted = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -115,6 +118,18 @@ class Wish
     public function setWishUser(?User $wishUser): static
     {
         $this->wishUser = $wishUser;
+
+        return $this;
+    }
+
+    public function isIsAccepted(): ?bool
+    {
+        return $this->isAccepted;
+    }
+
+    public function setIsAccepted(?bool $isAccepted): static
+    {
+        $this->isAccepted = $isAccepted;
 
         return $this;
     }

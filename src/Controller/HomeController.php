@@ -24,5 +24,4 @@ class HomeController extends AbstractController
     {
         return $this->render('home/react.html.twig');
     }
-
 }

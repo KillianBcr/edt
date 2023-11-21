@@ -4,7 +4,6 @@ namespace App\Factory;
 
 use App\Entity\Week;
 use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
 
 final class WeekFactory extends ModelFactory
 {

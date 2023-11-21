@@ -10,7 +10,7 @@ class WishFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-       // WishFactory::createMany(10);
+        // WishFactory::createMany(10);
         // $product = new Product();
         // $manager->persist($product);
 

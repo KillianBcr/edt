@@ -41,4 +41,3 @@ class UserDenormalizer implements \Symfony\Component\Serializer\Normalizer\Conte
         return $this->denormalizer->denormalize($data, $type, $format, $context);
     }
 }
-

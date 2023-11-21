@@ -2,7 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\NbGroup;
 use App\Repository\GroupRepository;
 use App\Repository\SubjectRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -25,7 +24,6 @@ class NbGroupFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-
     }
 
     public function getDependencies(): array
@@ -34,7 +32,4 @@ class NbGroupFixtures extends Fixture implements DependentFixtureInterface
             SubjectFixtures::class,
         ];
     }
-
-
 }
-

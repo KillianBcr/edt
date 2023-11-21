@@ -21,7 +21,6 @@ class AssignmentCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Affectations');
     }
 
-
     public function configureFields(string $pageName): iterable
     {
         return [

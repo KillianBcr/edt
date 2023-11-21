@@ -13,4 +13,3 @@ class WeekFixtures extends Fixture
         WeekFactory::new()->createMany(10);
     }
 }
-

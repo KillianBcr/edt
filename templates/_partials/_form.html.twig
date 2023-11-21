@@ -1,0 +1,15 @@
+<div class="container">
+    <form method="post" action="{{ path('app_wish_edit', {'id': wish.id}) }}">
+        {{ form_start(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.chosenGroups) }}
+            {{ form_widget(form.chosenGroups) }}
+            <div class="form-error">
+                {{ form_errors(form.chosenGroups) }}
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+    </form>
+</div>

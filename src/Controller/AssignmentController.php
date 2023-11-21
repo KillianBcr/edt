@@ -49,6 +49,7 @@ class AssignmentController extends AbstractController
     {
         $manager->remove($assignment);
         $manager->flush();
+
         return $this->redirectToRoute('app_assignment');
     }
 }
