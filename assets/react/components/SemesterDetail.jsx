@@ -138,7 +138,6 @@ function Semester() {
                                                         .map((group) => (
                                                             <ul key={group.id}>
                                                                 <li className="groups">
-                                                                    {group.type}
                                                                     {nbGroups === null ? (
                                                                         'Aucun Nombre De Groupe Trouvé'
                                                                     ) : (
@@ -150,8 +149,16 @@ function Semester() {
                                                                                 } else {
                                                                                     const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
                                                                                     const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
+                                                                                    var color = "dark";
+                                                                                    if (count > filteredNbGroup.nbGroup){
+                                                                                        color = "red";
+                                                                                    }else if (count < filteredNbGroup.nbGroup){
+                                                                                        color = "green";
+                                                                                    }else{
+                                                                                        color = "black"
+                                                                                    }
                                                                                     return (
-                                                                                        <span key={`${filteredNbGroup.id}`}>| {count}/{filteredNbGroup.nbGroup}</span>
+                                                                                        <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup}</span>
                                                                                     );
                                                                                 }
                                                                             })
