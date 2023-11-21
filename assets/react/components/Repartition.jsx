@@ -8,6 +8,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import {toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function Repartition() {
     const [wishes, setWishes] = useState([]);
@@ -77,12 +79,18 @@ function Repartition() {
         if (confirmed) {
             try {
                 await deleteWish(wishId);
-                setWishes(wishes.filter(wish => wish.id !== wishId));
+                setWishes((prevWishes) => prevWishes.filter((wish) => wish.id !== wishId));
             } catch (error) {
-                console.error("Error deleting wish:", error);
+                if (error.message === "JSON.parse: unexpected end of data at line 1 column 1 of the JSON data") {
+                    setWishes((prevWishes) => prevWishes.filter((wish) => wish.id !== wishId));
+                    console.warn("Suppression du vœu réussie, réponse vide du serveur.");
+                } else {
+                    console.error("Error deleting wish:", error);
+                }
             }
         }
     };
+
 
     const handleSaveWish = async () => {
         handleClose();
@@ -128,7 +136,7 @@ function Repartition() {
                 ))}
                 <tr>
                     <td>
-                        <Link to="/react/semesters" className="ajouter-button">Ajouter des heures</Link>
+                        <Link to="/react/semesters/1" className="ajouter-button">Ajouter des heures</Link>
                     </td>
                 </tr>
                 </tbody>
