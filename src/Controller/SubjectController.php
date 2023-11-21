@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Entity\Group;
 use App\Entity\NbGroup;
 use App\Entity\Subject;
-use App\Entity\SubjectCode;
 use App\Entity\Week;
+use App\Entity\Year;
 use App\Entity\Tag;
 use App\Repository\SemesterRepository;
 use App\Repository\SubjectCodeRepository;
@@ -31,6 +31,12 @@ class SubjectController extends AbstractController
     {
         if ($request->isMethod('POST')) {
             $file = $request->files->get('file');
+            $startYear = $request->request->get('start_year');
+            $endYear = $request->request->get('end_year');
+
+            if (!is_numeric($startYear) || !is_numeric($endYear)) {
+                $this->addFlash('error', 'Invalid start or end year');
+            }
 
             if ($file && $file->isValid()) {
                 $spreadsheet = IOFactory::load($file->getPathname());
@@ -52,6 +58,23 @@ class SubjectController extends AbstractController
 
                 $worksheets = iterator_to_array($spreadsheet->getWorksheetIterator());
                 $lastWorksheet = end($worksheets);
+
+                $existingYear = $entityManager->getRepository(Year::class)->findOneBy([
+                    'startYear' => $startYear,
+                    'endYear' => $endYear,
+                ]);
+
+                if ($existingYear) {
+                    $year = $existingYear;
+                } else {
+                    $year = new Year();
+                    $year->setStartYear($startYear);
+                    $year->setEndYear($endYear);
+                    $year->setAcademicYear($startYear.'-'.$endYear);
+                    $entityManager->persist($year);
+                    $entityManager->flush();
+                }
+
 
                 foreach ($worksheets as $worksheet) {
                     $sheetName = $worksheet->getTitle();
@@ -121,6 +144,7 @@ class SubjectController extends AbstractController
 
                             $existingSubject = $subjectRepository->findOneBy([
                                 'name' => $name,
+                                'subjectCode' => $subjectCode,
                             ]);
 
                             if ($existingSubject) {
@@ -132,6 +156,7 @@ class SubjectController extends AbstractController
                                 $subject->setFirstWeek($firstWeek);
                                 $subject->setLastWeek($lastWeek);
                                 $subject->setSemester($semester);
+                                $subject->setAcademicYear($year);
                                 $entityManager->persist($subject);
                                 $entityManager->flush();
                             }
