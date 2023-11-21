@@ -2,8 +2,6 @@
 
 {% block title %}Enseignant{% endblock %}
 
-
-
 {% block body %}
     <h1>Enseignants</h1>
     <div class="row">
@@ -17,7 +15,7 @@
                                 <dt>Email</dt>
                                 <dd>{{ user.email }}</dd>
                             </dl>
-                            <a href="{{ path('app_user_wish_show', {'id': user.id} )}}" class="btn btn">Voir les voeux</a>
+                            <button type="button" class="btn btn-primary" onclick="window.location='{{ path('app_user_wish_show', {'id': user.id}) }}'">Voir les voeux</button>
                         </div>
                     </div>
                 </div>
