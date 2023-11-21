@@ -9,6 +9,15 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
+
+    .copyFiles({
+        from: './node_modules/bootstrap-icons/font/bootstrap-icons.svg',
+        from: './node_modules/bootstrap-icons/',
+        to: 'images/[path][name].[ext]',
+        pattern: /bootstrap-icons\.svg$/
+    })
+
+
     // public path used by the web server to access the output path
     .setPublicPath('/build')
     // only needed for CDN's or subdirectory deploy
@@ -59,7 +68,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()

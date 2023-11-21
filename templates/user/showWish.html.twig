@@ -2,10 +2,6 @@
 
 {% block title %}Voeux de {{ user.firstName }} {{ user.lastName }} {% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('css/wish.css') }}">
-{% endblock %}
-
 {% block body %}
 
     <h1>Voeux de {{ user.firstName }} {{ user.lastName }}</h1>
@@ -27,7 +23,7 @@
                             </h2>
                             <dl>
                                 <dt>Code</dt>
-                                <dd>{{ wish.subjectId.subjectCode }}</dd>
+                                <dd>{{ wish.subjectId.subjectCode.code }}</dd>
                                 <dt>Détail</dt>
                                 <dd>{{ wish.chosenGroups }} groupe(s) de {{ wish.groupeType.type }}</dd>
                                 <dt>Modification</dt>

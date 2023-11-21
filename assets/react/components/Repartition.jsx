@@ -8,8 +8,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import {toast} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 
 function Repartition() {
     const [wishes, setWishes] = useState([]);
@@ -129,8 +127,8 @@ function Repartition() {
                         <td>{wish.subjectName}</td>
                         <td>{wish.chosenGroups} groupes de {wish.groupName} </td>
                         <td>
-                            <button className="modifier-button" onClick={() => handleOpen(wish.id)}>Modifier</button>
-                            <button className="supprimer-button" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
+                            <button className="btn btn-primary" onClick={() => handleOpen(wish.id)}>Modifier</button>
+                            <button className="btn btn-danger" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
                         </td>
                     </tr>
                 ))}

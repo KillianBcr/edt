@@ -2,30 +2,29 @@
 
 {% block title %}Enseignant{% endblock %}
 
-{% block head %}
-    {% block stylesheets %}
-        <link href="{{ asset('css/user.css') }}" type="text/css" rel="stylesheet" />
-    {% endblock %}
-{% endblock %}
 
 {% block body %}
-    <h1>Enseignants</h1>
-    <div class="row">
-        {% for user in users %}
-            {% if 'ROLE_ENSEIGNANT' in user.roles %}
+    <h1 class="text-center">Enseignants</h1>
+    <div class="row justify-content-center">
+        {% for user in pagination %}
                 <div class="col-md-4 mb-4">
-                    <div class="card">
+                    <div class="card mx-auto">
                         <div class="card-body">
                             <h2 class="card-title">{{ user.firstName }} {{ user.LastName }}</h2>
                             <dl>
                                 <dt>Email</dt>
                                 <dd>{{ user.email }}</dd>
                             </dl>
-                            <a href="{{ path('app_user_wish_show', {'id': user.id} )}}" class="btn btn">Voir les voeux</a>
+                            <button type="button" class="btn btn-primary" onclick="window.location='{{ path('app_user_wish_show', {'id': user.id}) }}'">Voir les voeux</button>
                         </div>
                     </div>
                 </div>
-            {% endif %}
         {% endfor %}
     </div>
+
+    <div class="pagination justify-content-center">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+
 {% endblock %}

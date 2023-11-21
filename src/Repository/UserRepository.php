@@ -8,7 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
-
+use Doctrine\ORM\Query;
 /**
  * @extends ServiceEntityRepository<User>
  *
@@ -39,6 +39,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+
+    public function queryAll(): Query
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u')
+            ->orderBy('u.id', 'ASC')
+            ->getQuery();
+    }
+
+
 
     //    /**
     //     * @return User[] Returns an array of User objects

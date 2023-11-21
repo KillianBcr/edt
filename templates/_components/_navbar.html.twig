@@ -1,3 +1,4 @@
+
 {% block head %}
     {% block stylesheets %}
         <link href="{{ asset('css/navbar.css') }}" type="text/css" rel="stylesheet" />
@@ -9,14 +10,45 @@
         <a href="/" class="logo">EDT</a>
 
         <nav class="navbar">
-            <a href="/">Accueil</a>
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('admin') }}">Admin</a>
                 <a href="{{ path('app_user') }}">Voeux</a>
             {% endif %}
             <a href="#">Historique</a>
-            <a href="{{ path('app_user_show')}}">Profil</a>
-            <a href="/logout">Déconnexion</a>
+            <a href="{{ path('app_upload')}}">Excel</a>
+
+            <a href="{{ path('app_user_show')}}">
+                <svg class="bi me-2 opacity-50 theme-icon"><use href="{{ asset('build/images/bootstrap-icons.svg#person-circle') }}"></use></svg>
+            </a>
+                <li class="nav-item dropdown">
+                    <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (dark)">
+                        <svg class="bi my-1 theme-icon-active"><use href="{{ asset('assets/icons/bootstrap-icons.svg#moon-stars-fill') }}"></use></svg>
+                        <span class="d-lg-none ms-2" id="bd-theme-text">Theme</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                                <svg class="bi me-2 opacity-50 theme-icon"><use href="{{ asset('build/images/bootstrap-icons.svg#sun-fill') }}"></use></svg>
+                                Clair
+                                <svg class="bi ms-auto d-none"><use href="{{ asset('build/images/bootstrap-icons.svg#check2') }}"></use></svg>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark" aria-pressed="true">
+                                <svg class="bi me-2 opacity-50 theme-icon"><use href="{{ asset('build/images/bootstrap-icons.svg#moon-stars-fill') }}"></use></svg>
+                                Sombre
+                                <svg class="bi ms-auto d-none"><use href="{{ asset('build/images/bootstrap-icons.svg#check2') }}"></use></svg>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
+                                <svg class="bi me-2 opacity-50 theme-icon"><use href="{{ asset('build/images/bootstrap-icons.svg#circle-half') }}"></use></svg>
+                                Auto
+                                <svg class="bi ms-auto d-none"><use href="{{ asset('build/images/bootstrap-icons.svg#check2') }}"></use></svg>
+                            </button>
+                        </li>
+                    </ul>
+                </li>
         </nav>
     </header>
 {% endblock %}
