@@ -62,10 +62,6 @@ class Subject
     #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?int $lastWeek = null;
 
-    #[ORM\Column(length: 40)]
-    #[Groups(['get_Subject', 'get_Semester', 'get_Tag'])]
-    private ?string $subjectCode = null;
-
     #[ORM\ManyToOne(inversedBy: 'subjects')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
@@ -86,7 +82,7 @@ class Subject
 
     #[ORM\ManyToOne(inversedBy: 'subjects')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode'])]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Tag'])]
     private ?SubjectCode $subjectCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'subjects')]
@@ -146,13 +142,13 @@ class Subject
         return $this;
     }
 
-    public function getSubjectCode(): ?string
+    public function getSubjectCode(): ?SubjectCode
     {
         return $this->subjectCode;
     }
 
     #[Groups(['get_Subject', 'set_Subject'])]
-    public function setSubjectCode(string $subjectCode): static
+    public function setSubjectCode(SubjectCode $subjectCode): static
     {
         $this->subjectCode = $subjectCode;
 
@@ -227,6 +223,7 @@ class Subject
 
         return $this;
     }
+
     /**
      * @return Collection<int, NbGroup>
      */
@@ -250,6 +247,7 @@ class Subject
 
         return $this;
     }
+
     /**
      * @return Collection<int, Tag>
      */

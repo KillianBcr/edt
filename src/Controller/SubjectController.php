@@ -143,7 +143,6 @@ class SubjectController extends AbstractController
 
                             $existingSubject = $entityManager->getRepository(Subject::class)->findOneBy([
                                 'name' => $name,
-                                'subjectCode' => $subjectCode,
                                 'academicYear' => $year,
                             ]);
 
