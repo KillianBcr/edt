@@ -75,7 +75,6 @@ class SubjectController extends AbstractController
                     $entityManager->flush();
                 }
 
-
                 foreach ($worksheets as $worksheet) {
                     $sheetName = $worksheet->getTitle();
 
@@ -142,9 +141,10 @@ class SubjectController extends AbstractController
 
                             $subjectCode = $subjectCodeRepository->findOrCreateByCode($subjectCode);
 
-                            $existingSubject = $subjectRepository->findOneBy([
+                            $existingSubject = $entityManager->getRepository(Subject::class)->findOneBy([
                                 'name' => $name,
                                 'subjectCode' => $subjectCode,
+                                'academicYear' => $year,
                             ]);
 
                             if ($existingSubject) {
