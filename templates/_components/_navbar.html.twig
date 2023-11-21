@@ -1,3 +1,4 @@
+
 {% block head %}
     {% block stylesheets %}
         <link href="{{ asset('css/navbar.css') }}" type="text/css" rel="stylesheet" />
@@ -16,6 +17,7 @@
             {% endif %}
             <a href="#">Historique</a>
             <a href="{{ path('app_user_show')}}">Profil</a>
+            <a href="{{ path('app_upload')}}">Excel</a>
             <a href="/logout">Déconnexion</a>
             <ul>
                 <li class="nav-item dropdown">
