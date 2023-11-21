@@ -8,7 +8,7 @@ import {addTagToDatabase, deleteTagFromDatabase} from "../services/api";
 function TagForm() {
     const [tagInput, setTagInput] = useState('');
     const [tags, setTags] = useState([]);
-
+    console.log(tags)
     const handleTagInputChange = (event) => {
         setTagInput(event.target.value);
     };
@@ -17,7 +17,6 @@ function TagForm() {
         if (tagInput.trim() !== '') {
             addTagToDatabase(tagInput)
                 .then((newTag) => {
-                    // Faites quelque chose avec la réponse de la base de données si nécessaire
                     console.log('Tag added successfully:', newTag);
                 })
                 .catch((error) => {
@@ -29,13 +28,10 @@ function TagForm() {
     };
 
     const handleDeleteTag = (tagToDelete) => () => {
-        // Obtenez l'ID du tag à partir de la base de données
-        const tagId = tagToDelete.id; // Assurez-vous que votre objet tag a une propriété id
-
-        // Supprimez le tag de la base de données
+        const tagId = tagToDelete.tag;
+        console.log(tagToDelete)
         deleteTagFromDatabase(tagId)
             .then(() => {
-                // Mettez à jour l'état des tags en supprimant le tag
                 console.log(tagId)
                 setTags((prevTags) => prevTags.filter((tag) => tag.id !== tagId));
             })

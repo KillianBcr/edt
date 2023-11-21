@@ -34,9 +34,9 @@ export default function PopUpTags() {
                     {"Ajouter des filtres"}
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="pop-up-tags-description">
+                    <div id="pop-up-tags-description">
                         <TagForm/>
-                    </DialogContentText>
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Fermer</Button>

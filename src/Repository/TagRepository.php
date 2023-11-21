@@ -35,6 +35,25 @@ class TagRepository extends ServiceEntityRepository
     //            ->getResult()
     //        ;
     //    }
+    public function deleteByName(string $tagName)
+    {
+        return $this->createQueryBuilder('t')->delete('t')->where('t.name=:name')->setParameter('name', $tagName)->getQuery()->getResult();
+    }
+
+    //    /**
+    //     * @return Tag[] Returns an array of Tag objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('t.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
 
     //    public function findOneBySomeField($value): ?Tag
     //    {
