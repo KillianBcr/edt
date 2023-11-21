@@ -1,15 +1,24 @@
 namespace: App\Tests
 support_namespace: Support
 paths:
-    tests: tests
-    output: tests/_output
-    data: tests/Support/Data
-    support: tests/Support
-    envs: tests/_envs
+  tests: tests
+  output: tests/_output
+  data: tests/_data
+  support: tests/_support
+  envs: tests/_envs
 actor_suffix: Tester
 extensions:
-    enabled:
-        - Codeception\Extension\RunFailed
+  enabled:
+    - Codeception\Extension\RunFailed
+modules:
+  enabled:
+    - Codeception\Module\REST:
+        url: http://127.0.0.1:8000/api/
+        depends: PhpBrowser
+        part: Json
+    - Codeception\Lib\InnerBrowser:
+        part: PhpBrowser
+    - App\Tests\Support\Helper\ApiPlatform
 params:
-    - .env
-    - .env.test
+  - .env
+  - .env.test
