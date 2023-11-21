@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Tests\Fixtures\Metadata\Get;
 use App\Repository\YearRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -61,6 +63,14 @@ class Year
     #[Groups(['get_Year'])]
     private ?string $academicYear = null;
 
+    #[ORM\OneToMany(mappedBy: 'academicYear', targetEntity: Subject::class)]
+    private Collection $subjects;
+
+    public function __construct()
+    {
+        $this->subjects = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,6 +111,36 @@ class Year
     public function setAcademicYear(string $academicYear): static
     {
         $this->academicYear = $academicYear;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subject>
+     */
+    public function getSubjects(): Collection
+    {
+        return $this->subjects;
+    }
+
+    public function addSubject(Subject $subject): static
+    {
+        if (!$this->subjects->contains($subject)) {
+            $this->subjects->add($subject);
+            $subject->setAcademicYear($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubject(Subject $subject): static
+    {
+        if ($this->subjects->removeElement($subject)) {
+            // set the owning side to null (unless already changed)
+            if ($subject->getAcademicYear() === $this) {
+                $subject->setAcademicYear(null);
+            }
+        }
 
         return $this;
     }

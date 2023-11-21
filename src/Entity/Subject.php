@@ -89,6 +89,11 @@ class Subject
     #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode'])]
     private ?SubjectCode $subjectCode = null;
 
+    #[ORM\ManyToOne(inversedBy: 'subjects')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['get_Subject', 'get_Semester', 'get_SubjectCode', 'get_Year'])]
+    private ?Year $academicYear = null;
+
     public function __construct()
     {
         $this->idNbGroup = new ArrayCollection();
@@ -265,6 +270,18 @@ class Subject
     public function removeTag(Tag $tag): static
     {
         $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function getAcademicYear(): ?Year
+    {
+        return $this->academicYear;
+    }
+
+    public function setAcademicYear(?Year $academicYear): static
+    {
+        $this->academicYear = $academicYear;
 
         return $this;
     }
