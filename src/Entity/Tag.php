@@ -25,20 +25,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
             normalizationContext: ['groups' => ['get_Tag']],
         ),
         new Post(
-            security: "is_granted('ROLE_ADMIN')",
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Delete(
-            security: "is_granted('ROLE_ADMIN') and object.getUser() == user",
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Put(
             normalizationContext: ['groups' => ['get_Tag']],
             denormalizationContext: ['groups' => ['get_Tag']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Patch(
             normalizationContext: ['groups' => ['get_Tag']],
             denormalizationContext: ['groups' => ['get_Tag']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
     ]
 )]class Tag

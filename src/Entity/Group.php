@@ -23,23 +23,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('ROLE_ADMIN')",
         ),
         new Put(
-            security: "is_granted('ROLE_ADMIN') and object.getUser() == user",
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Patch(
-            security: "is_granted('ROLE_ADMIN') and object.getUser() == user",
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Delete(
-            security: "is_granted('ROLE_ADMIN') and object.getUser() == user",
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Put(
             normalizationContext: ['groups' => ['get_Group']],
             denormalizationContext: ['groups' => ['set_Group']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Patch(
             normalizationContext: ['groups' => ['get_Group']],
             denormalizationContext: ['groups' => ['set_Group']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ADMIN')"
         ),
     ]
 )]

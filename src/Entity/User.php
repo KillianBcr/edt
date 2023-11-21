@@ -21,9 +21,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-        new GetCollection(),
+        new GetCollection(
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
+        ),
         new Get(
-            normalizationContext: ['groups' => ['get_User']]
+            normalizationContext: ['groups' => ['get_User']],
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new GetCollection(
             uriTemplate: '/me',
@@ -38,18 +41,18 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
             paginationEnabled: false,
             normalizationContext: ['groups' => ['get_Me', 'get_User']],
-            security: "is_granted('ROLE_USER')"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Put(
             denormalizationContext: ['groups' => ['set_User']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ENSEIGNANT')"
         ),
         new Patch(
             denormalizationContext: ['groups' => ['set_User']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ENSEIGNANT')"
         ),
         new Delete(
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ADMIN')"
         ),
     ],
     normalizationContext: ['groups' => ['get_User', 'get_Me']]

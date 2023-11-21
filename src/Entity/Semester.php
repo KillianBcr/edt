@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Controller\GetSubjectsController;
 use App\Repository\SemesterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -27,16 +26,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
             normalizationContext: ['groups' => ['get_Semester']],
         ),
         new Post(
-            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Put(
-            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Patch(
-            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Delete(
-            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_ADMIN')"
         ),
     ]
 )]

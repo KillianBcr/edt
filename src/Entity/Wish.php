@@ -10,9 +10,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\WishRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WishRepository::class)]
@@ -20,25 +18,24 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new Get(
             normalizationContext: ['groups' => ['get_Wish']],
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new GetCollection(),
         new Post(
-            security: "is_granted('ROLE_USER')"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Patch(
             normalizationContext: ['groups' => ['get_Wish', 'set_Wish']],
-            security: "is_granted('ROLE_USER')"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Put(
-            security: "is_granted('ROLE_USER')"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Delete(
-            security: "is_granted('ROLE_USER')"
+            security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
     ]
 )]
-
-
 class Wish
 {
     #[ORM\Id]
@@ -48,7 +45,7 @@ class Wish
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['get_Wish','set_Wish'])]
+    #[Groups(['get_Wish', 'set_Wish'])]
     private ?int $chosenGroups = null;
 
     #[ORM\ManyToOne(inversedBy: 'wishes')]
@@ -121,5 +118,4 @@ class Wish
 
         return $this;
     }
-
 }

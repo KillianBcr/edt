@@ -28,17 +28,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('ROLE_ADMIN')",
         ),
         new Delete(
-            security: "is_granted('ROLE_ADMIN') and object.getUser() == user",
+            security: "is_granted('ROLE_ADMIN')",
         ),
         new Put(
             normalizationContext: ['groups' => ['get_Subject']],
             denormalizationContext: ['groups' => ['set_Subject']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ADMIN')"
         ),
         new Patch(
             normalizationContext: ['groups' => ['get_Subject']],
             denormalizationContext: ['groups' => ['set_Subject']],
-            security: "is_granted('ROLE_USER') and object == user"
+            security: "is_granted('ROLE_ADMIN')"
         ),
     ]
 )]
