@@ -92,7 +92,7 @@ function Me() {
                                         {associatedWeeks[index].map((weekDetails, weekIndex) => (
                                             <li key={weekIndex}>
                                                 {weekDetails && (
-                                                    <p>Week Number: {weekDetails.weekNumber}, Number of Hours: {weekDetails.numberHours}</p>
+                                                    <p>Week Number: {weekDetails.weekNumber}, Number of Hours: {weekDetails.numberHours }</p>
                                                 )}
                                             </li>
                                         ))}
