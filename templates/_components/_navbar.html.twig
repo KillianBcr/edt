@@ -12,7 +12,7 @@
         <nav class="navbar">
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('admin') }}">Admin</a>
-                <a href="{{ path('app_user') }}">Voeux</a>
+                <a href="{{ path('app_subject') }}">Voeux</a>
             {% endif %}
             <a href="#">Historique</a>
             <a href="{{ path('app_upload')}}">Excel</a>

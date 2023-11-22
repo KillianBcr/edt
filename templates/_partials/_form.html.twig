@@ -10,6 +10,14 @@
             </div>
         </div>
 
+        <div class="form-group">
+            {{ form_label(form.isAccepted) }}
+            {{ form_widget(form.isAccepted) }}
+            <div class="form-error">
+                {{ form_errors(form.isAccepted) }}
+            </div>
+        </div>
+
         {{ form_end(form) }}
     </form>
 </div>

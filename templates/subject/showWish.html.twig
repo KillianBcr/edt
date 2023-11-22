@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ subject.name }}{% endblock %}
+
+{% block body %}
+
+    <h1 class="text-center">{{ subject.name }} - {{ subject.subjectCode.code }}</h1>
+
+    <div class="row justify-content-center mt-4">
+        {% if wishes is empty %}
+            <div class="col-md-6">
+                <div class="alert alert-warning text-center">
+                    <h2>Aucun vœu pour cette matière</h2>
+                </div>
+            </div>
+        {% else %}
+            {% for wish in wishes %}
+                <div class="col-md-6 mb-4">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            {{ wish.wishUser.lastname }} {{ wish.wishUser.firstname }}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Détail</h5>
+                            <p class="card-text">
+                                {{ wish.chosenGroups }} groupe(s) de {{ wish.groupeType.type }} sur
+                                {% for nbGroup in wish.groupeType.nbGroups %}
+                                    {{ nbGroup.nbGroup }}
+                                {% endfor %}
+                            </p>
+                            <h5 class="card-title">Modification</h5>
+                            <p class="card-text">
+                                {{ render(controller('App\\Controller\\WishController::edit', {'id': wish.id})) }}
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <p>Créé le :</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="pagination justify-content-center">
+                {{ knp_pagination_render(wishes) }}
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
