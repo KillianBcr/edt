@@ -66,6 +66,9 @@ class Year
     #[ORM\OneToMany(mappedBy: 'academicYear', targetEntity: Subject::class)]
     private Collection $subjects;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $currentYear = null;
+
     public function __construct()
     {
         $this->subjects = new ArrayCollection();
@@ -141,6 +144,18 @@ class Year
                 $subject->setAcademicYear(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isCurrentYear(): ?bool
+    {
+        return $this->currentYear;
+    }
+
+    public function setCurrentYear(?bool $currentYear): static
+    {
+        $this->currentYear = $currentYear;
 
         return $this;
     }
