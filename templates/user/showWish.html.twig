@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Voeux de {{ user.firstName }} {{ user.lastName }} {% endblock %}
+{% block title %}Voeux de {{ user.firstName }} {{ user.lastName }}{% endblock %}
 
 {% block body %}
 
@@ -11,28 +11,44 @@
             <h2>Aucun voeux pour l'utilisateur</h2>
         {% else %}
             {% for wish in wishes %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
+                <div class="col-md-6 mb-4">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            {% if wish.isAccepted %}
+                                <span class="badge bg-success font-weight-normal" style="font-size: 1rem;">Accepté</span>
+                            {% else %}
+                                <span class="badge bg-danger font-weight-normal" style="font-size: 1rem;">Refusé</span>
+                            {% endif %}
+                        </div>
+
                         <div class="card-body">
-                            <h2 class="card-title">
-                                {% if wish.subjectId.name|length > 15 %}
-                                    {{ wish.subjectId.name|slice(0, 15) ~ '...' }}
-                                {% else %}
-                                    {{ wish.subjectId.name }}
-                                {% endif %}
-                            </h2>
-                            <dl>
-                                <dt>Code</dt>
-                                <dd>{{ wish.subjectId.subjectCode.code }}</dd>
-                                <dt>Détail</dt>
-                                <dd>{{ wish.chosenGroups }} groupe(s) de {{ wish.groupeType.type }}</dd>
-                                <dt>Modification</dt>
+
+                            <h5 class="card-title">Matière</h5>
+                            <a href="{{ path('app_subject_wish_show', {'id': wish.subjectId.id}) }}" class="btn btn-secondary">
+                                {{ wish.subjectId.name }}
+                            </a>
+
+                            <h5 class="card-title">Détail</h5>
+                            <p class="card-text">
+                                {{ wish.chosenGroups }} groupe(s) de {{ wish.groupeType.type }} sur
+                                {% for nbGroup in wish.groupeType.nbGroups %}
+                                    {{ nbGroup.nbGroup }}
+                                {% endfor %}
+                            </p>
+                            <h5 class="card-title">Modification</h5>
+                            <p class="card-text">
                                 {{ render(controller('App\\Controller\\WishController::edit', {'id': wish.id})) }}
-                            </dl>
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <p>Créé le :</p>
                         </div>
                     </div>
                 </div>
             {% endfor %}
+            <div class="pagination justify-content-center">
+                {{ knp_pagination_render(wishes) }}
+            </div>
         {% endif %}
     </div>
 

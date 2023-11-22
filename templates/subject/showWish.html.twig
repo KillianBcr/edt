@@ -18,9 +18,19 @@
                 <div class="col-md-6 mb-4">
                     <div class="card text-center">
                         <div class="card-header">
-                            {{ wish.wishUser.lastname }} {{ wish.wishUser.firstname }}
+                            {% if wish.isAccepted %}
+                                <span class="badge bg-success font-weight-normal" style="font-size: 1rem;">Accepté</span>
+                            {% else %}
+                                <span class="badge bg-danger font-weight-normal" style="font-size: 1rem;">Refusé</span>
+                            {% endif %}
                         </div>
+
                         <div class="card-body">
+
+                            <h5 class="card-title">Professeur</h5>
+                            <a href="{{ path('app_user_wish_show', {'id': wish.wishUser.id}) }}" class="btn btn-secondary">
+                                {{ wish.wishUser.lastname }} {{ wish.wishUser.firstname }}
+                            </a>
                             <h5 class="card-title">Détail</h5>
                             <p class="card-text">
                                 {{ wish.chosenGroups }} groupe(s) de {{ wish.groupeType.type }} sur
