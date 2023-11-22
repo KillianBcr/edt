@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
-import {addTagToDatabase, deleteTagFromDatabase} from "../services/api";
+import {addTagToDatabase, deleteTagFromDatabase, fetchSemesters, fetchTags} from "../services/api";
+import {Link} from "wouter";
 
 function TagForm() {
     const [tagInput, setTagInput] = useState('');
@@ -23,7 +24,6 @@ function TagForm() {
                 .catch((error) => {
                     console.error('Error adding tag:', error);
                 });
-            // setTags([...tags, tagInput]);
             setTagInput('');
         }
     };
@@ -41,9 +41,31 @@ function TagForm() {
             });
     };
 
+    const [tagsList, setTagsList] = useState(null);
+
+    useEffect(() => {
+        fetchTags().then((data) => {
+            setTagsList(data["hydra:member"]);
+        });
+    }, []);
+
+
     return (
         <Box>
             <div>
+
+                {tagsList ===null ? 'Loading...' :
+                    tagsList.map((tagElement) => (
+                            <Chip
+                                key={tagElement.id}
+                                label={tagElement.name}
+                                onDelete={handleDeleteTag({tagElement})}
+                                style={{ margin: '4px' }}>
+                            </Chip>
+                        )
+                    )
+                }
+
                 {tags.map((tag, index) => (
                     <Chip
                         key={index}

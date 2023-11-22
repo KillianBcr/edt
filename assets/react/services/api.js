@@ -363,4 +363,8 @@ export function deleteTagFromDatabase(tagId) {
         });
 }
 
-
+export function fetchTags() {
+    return fetch(`${BASE_URL}/tags`).then((response) =>
+        response.ok ? response.json() : Promise.resolve(null),
+    );
+}
