@@ -18,17 +18,18 @@ function TagForm() {
             addTagToDatabase(tagInput)
                 .then((newTag) => {
                     console.log('Tag added successfully:', newTag);
+                    setTags([...tags, {id: newTag.id, name: newTag.name}])
                 })
                 .catch((error) => {
                     console.error('Error adding tag:', error);
                 });
-            setTags([...tags, tagInput]);
+            // setTags([...tags, tagInput]);
             setTagInput('');
         }
     };
 
     const handleDeleteTag = (tagToDelete) => () => {
-        const tagId = tagToDelete.tag;
+        const tagId = tagToDelete.tag.id;
         console.log(tagToDelete)
         deleteTagFromDatabase(tagId)
             .then(() => {
@@ -46,7 +47,7 @@ function TagForm() {
                 {tags.map((tag, index) => (
                     <Chip
                         key={index}
-                        label={tag}
+                        label={tag.name}
                         onDelete={handleDeleteTag({tag})}
                         style={{ margin: '4px' }}
                     />
@@ -54,7 +55,7 @@ function TagForm() {
             </div>
             <div>
                 <TextField
-                    label="Ajouter un filtre"
+                    label="Ajouter un tag"
                     variant="outlined"
                     value={tagInput}
                     onChange={handleTagInputChange}

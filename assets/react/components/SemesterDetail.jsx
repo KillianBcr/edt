@@ -196,6 +196,13 @@ function Semester() {
                                 return (
                                     <li key={subject['@id']} className="semester-li">
                                         <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
+                                        {subject.tags && subject.tags.length > 0 && (
+                                            <div className="tag-container">
+                                                {subject.tags.map((tag, index) => (
+                                                    <span key={index} className="tag">{tag.name}</span>
+                                                ))}
+                                            </div>
+                                        )}
                                         {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
                                             <div>
                                                 <div className="groupe-container">

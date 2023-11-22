@@ -22,7 +22,7 @@ export default function PopUpTags() {
     return (
         <div>
             <Button variant="outlined" onClick={handleClickOpen}>
-                Ajouter des filtres
+                Ajouter des tags
             </Button>
             <Dialog
                 open={open}
@@ -31,7 +31,7 @@ export default function PopUpTags() {
                 aria-describedby="pop-up-tags-description"
             >
                 <DialogTitle id="pop-up-tags-title">
-                    {"Ajouter des filtres"}
+                    {"Ajouter des tags"}
                 </DialogTitle>
                 <DialogContent>
                     <div id="pop-up-tags-description">
