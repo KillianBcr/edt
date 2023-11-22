@@ -37,12 +37,17 @@ class UserController extends AbstractController
             'id' => "\d+",
         ]
     )]
-    public function showWishes(User $user): Response
+    public function showWishes(User $user, PaginatorInterface $paginator, Request $request): Response
     {
         $wishes = $user->getWish();
+        $pagination = $paginator->paginate(
+            $wishes,
+            $request->query->getInt('page', 1),
+            2
+        );
 
         return $this->render('user/showWish.html.twig',
-            ['wishes' => $wishes, 'user' => $user]);
+            ['wishes' => $pagination, 'user' => $user]);
     }
 
     #[IsGranted('ROLE_USER')]

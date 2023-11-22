@@ -32,7 +32,6 @@ $warning: #e4cf15 ;
 @import "~bootstrap/scss/bootstrap";
 
 h1{
-  padding: 50px;
   text-align: center;
 }
 
@@ -45,4 +44,36 @@ h1{
 
 form{
   justify-content: center;
+}
+
+
+
+.btn-bd-primary{
+  background-color: #4a3d8a ;
+  color: white;
+}
+
+.dropdown-item:active{
+  background-color: #4a3d8a;
+}
+
+.dropdown-item:hover{
+  background-color: #4a3d8a;
+  color: white;
+}
+
+.dropdown-item.active, .dropdown-item:active{
+  background-color: #4a3d8a;
+  color: white;
+}
+
+.active > .page-link, .page-link.active{
+  background-color: #4a3d8a;
+  color: white;
+  border-color : white;
+}
+
+.wishForm{
+  display: flex;
+  flex-direction: column;
 }

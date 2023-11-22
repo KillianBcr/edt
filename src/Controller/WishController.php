@@ -64,7 +64,7 @@ class WishController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager->flush();
 
-            return $this->redirectToRoute('app_user_wish_show', ['id' => $wish->getWishUser()->getId()]);
+            return $this->redirectToRoute('app_subject_wish_show', ['id' => $wish->getId()]);
         }
 
         return $this->render('/_partials/_form.html.twig', [

@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Upload Excel</h1>
+
+    {% if app.flashes('error') is not empty %}
+        <div class="alert alert-danger">
+            {% for message in app.flashes('error') %}
+                {{ message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        tr {
+            border-bottom: 1px solid black;
+            margin: 10px;
+        }
+    </style>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <label for="start_year">Start Year:</label>
+        <label>
+            <input type="text" name="start_year" required>
+        </label>
+        <label for="end_year">End Year:</label>
+        <label>
+            <input type="text" name="end_year" required>
+        </label>
+        <button type="submit">Submit</button>
+    </form>
+
+
+
+    {% if data is defined %}
+        {% for sheetName, sheetData in data %}
+            <h2>Data from {{ sheetName }}</h2>
+            <table>
+                {% for row in sheetData %}
+                    <tr>
+                        {% for col in row|slice(1) %}
+                            <td>{{ col }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -5,12 +5,15 @@ namespace App\Controller;
 use App\Entity\Group;
 use App\Entity\NbGroup;
 use App\Entity\Subject;
+use App\Entity\Tag;
 use App\Entity\Week;
 use App\Entity\Year;
-use App\Entity\Tag;
 use App\Repository\SemesterRepository;
 use App\Repository\SubjectCodeRepository;
+use App\Repository\SubjectRepository;
+use App\Repository\WishRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -136,7 +139,6 @@ class SubjectController extends AbstractController
                             $semesterNumber = (int) $row[1][2];
                             $tag = $row[7];
 
-
                             $semester = $semesterRepository->findOneBy(['name' => "Semestre $semesterNumber"]);
 
                             $subjectCode = $subjectCodeRepository->findOrCreateByCode($subjectCode);
@@ -217,7 +219,6 @@ class SubjectController extends AbstractController
                             $group->addNbGroup($nbGroup);
                             $entityManager->persist($nbGroup);
                             $entityManager->flush();
-
                         }
                     } else {
                         $this->addFlash('error', 'No data found in sheet: '.$sheetName);
@@ -229,8 +230,48 @@ class SubjectController extends AbstractController
             }
         }
 
-        return $this->render('subject/index.html.twig', [
+        return $this->render('subject/_form.html.twig', [
             'data' => $allData ?? null,
+        ]);
+    }
+
+    #[Route('/subjects', name: 'app_subject')]
+    public function index(SubjectRepository $repository, PaginatorInterface $paginator, Request $request): Response
+    {
+        $subjects = $repository->queryAll();
+        $pagination = $paginator->paginate(
+            $subjects,
+            $request->query->getInt('page', 1),
+            9
+        );
+
+        return $this->render('subject/index.html.twig', [
+            'subjects' => $subjects,
+            'pagination' => $pagination,
+        ]);
+    }
+
+    #[Route('/subject/{id}/wishes', name: 'app_subject_wish_show',
+        requirements: [
+            'id' => "\d+",
+        ]
+    )]
+    public function showWishes(Subject $subject, WishRepository $repository, PaginatorInterface $paginator, Request $request): Response
+    {
+        $query = $repository->createQueryBuilder('w')
+            ->where('w.subjectId = :subjectId')
+            ->setParameter('subjectId', $subject)
+            ->getQuery();
+
+        $wishes = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            2
+        );
+
+        return $this->render('subject/showWish.html.twig', [
+            'wishes' => $wishes,
+            'subject' => $subject,
         ]);
     }
 }

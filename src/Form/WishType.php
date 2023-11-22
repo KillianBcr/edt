@@ -43,6 +43,9 @@ class WishType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Wish::class,
+            'attr' => [
+                'class' => 'wishForm',
+            ],
         ]);
     }
 }
