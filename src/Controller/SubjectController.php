@@ -46,18 +46,6 @@ class SubjectController extends AbstractController
                 $spreadsheet = IOFactory::load($file->getPathname());
                 $entityManager = $this->registry->getManagerForClass(Subject::class);
 
-                $groupRepository = $entityManager->getRepository(Group::class);
-                $groupRepository->createQueryBuilder('g')
-                    ->delete()
-                    ->getQuery()
-                    ->execute();
-
-                $subjectRepository = $entityManager->getRepository(Subject::class);
-                $subjectRepository->createQueryBuilder('s')
-                    ->delete()
-                    ->getQuery()
-                    ->execute();
-
                 $allData = [];
 
                 $worksheets = iterator_to_array($spreadsheet->getWorksheetIterator());
@@ -65,16 +53,27 @@ class SubjectController extends AbstractController
 
                 $existingYear = $entityManager->getRepository(Year::class)->findOneBy([
                     'startYear' => $startYear,
-                    'endYear' => $endYear,
                 ]);
+
+                if ($existingYear) {
+                    $subjectsToDelete = $entityManager->getRepository(Subject::class)->findBy([
+                        'academicYear' => $existingYear,
+                    ]);
+
+                    foreach ($subjectsToDelete as $subjectToDelete) {
+                        $entityManager->remove($subjectToDelete);
+                    }
+
+                    $entityManager->flush();
+                }
 
                 if ($existingYear) {
                     $year = $existingYear;
                 } else {
                     $year = new Year();
                     $year->setStartYear($startYear);
-                    $year->setEndYear($endYear);
-                    $year->setAcademicYear($startYear.'-'.$endYear);
+                    $year->setEndYear($startYear + 1);
+                    $year->setAcademicYear($startYear.'-'.$startYear + 1);
                     $entityManager->persist($year);
                     $entityManager->flush();
                 }
