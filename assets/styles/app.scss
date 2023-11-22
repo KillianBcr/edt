@@ -32,7 +32,6 @@ $warning: #e4cf15 ;
 @import "~bootstrap/scss/bootstrap";
 
 h1{
-  padding: 50px;
   text-align: center;
 }
 
@@ -44,5 +43,7 @@ h1{
 }
 
 form{
+  display: flex;
   justify-content: center;
+  flex-direction: column;
 }
