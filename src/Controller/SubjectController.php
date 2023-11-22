@@ -70,12 +70,24 @@ class SubjectController extends AbstractController
                 if ($existingYear) {
                     $year = $existingYear;
                 } else {
-                    $year = new Year();
-                    $year->setStartYear($startYear);
-                    $year->setEndYear($startYear + 1);
-                    $year->setAcademicYear($startYear.'-'.$startYear + 1);
-                    $entityManager->persist($year);
+                    $existingYears = $entityManager->getRepository(Year::class)->findAll();
+
+                    $newYear = new Year();
+                    $newYear->setStartYear($startYear);
+                    $newYear->setEndYear($startYear + 1);
+                    $newYear->setAcademicYear($startYear.'-'.$startYear + 1);
+
+                    foreach ($existingYears as $existing) {
+                        $existing->setCurrentYear(null);
+                        $entityManager->persist($existing);
+                    }
+
+                    $newYear->setCurrentYear(true);
+
+                    $entityManager->persist($newYear);
                     $entityManager->flush();
+
+                    $year = $newYear;
                 }
 
                 foreach ($worksheets as $worksheet) {
