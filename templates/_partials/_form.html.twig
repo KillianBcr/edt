@@ -1,7 +1,6 @@
 <div class="container">
-    <form method="post" action="{{ path('app_wish_edit', {'id': wish.id}) }}">
-        {{ form_start(form) }}
-
+    <form class="wishForm" method="post" action="{{ path('app_wish_edit', {'id': wish.id}) }}">
+        {{ form_start(form, {'attr': {'class': form.vars.attr.class ~ ' additional-class'}}) }}
         <div class="form-group">
             {{ form_label(form.chosenGroups) }}
             {{ form_widget(form.chosenGroups) }}
@@ -10,7 +9,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-radio">
             {{ form_label(form.isAccepted) }}
             {{ form_widget(form.isAccepted) }}
             <div class="form-error">
