@@ -65,6 +65,7 @@ class Group
     {
         $this->wishes = new ArrayCollection();
         $this->nbGroups = new ArrayCollection();
+        $this->weeks = new ArrayCollection();
     }
 
     #[ORM\ManyToOne(inversedBy: 'groups')]
@@ -77,6 +78,9 @@ class Group
 
     #[ORM\ManyToMany(targetEntity: NbGroup::class, mappedBy: 'groups')]
     private Collection $nbGroups;
+
+    #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'groups')]
+    private Collection $weeks;
 
     public function getId(): ?int
     {
@@ -171,6 +175,33 @@ class Group
     {
         if ($this->nbGroups->removeElement($nbGroup)) {
             $nbGroup->removeGroup($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Week>
+     */
+    public function getWeeks(): Collection
+    {
+        return $this->weeks;
+    }
+
+    public function addWeek(Week $week): static
+    {
+        if (!$this->weeks->contains($week)) {
+            $this->weeks->add($week);
+            $week->addGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWeek(Week $week): static
+    {
+        if ($this->weeks->removeElement($week)) {
+            $week->removeGroup($this);
         }
 
         return $this;

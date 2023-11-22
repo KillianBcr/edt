@@ -136,26 +136,31 @@ export async function updateWish(wishId, updatedWishData) {
     }
 }
 
-export async function WishesBySubject() {
-    const allWishes = await fetchWishes();
-    const wishesBySubject = {};
+export function getLoggedInUserWishes() {
+    // Get the user ID from the 'getMe' function
+    return getMe().then((userData) => {
+        if (userData && userData.id) {
+            const userId = userData.id;
 
-    for (const wish of allWishes) {
-        const subjectId = wish.subjectId;
-        if (!wishesBySubject[subjectId]) {
-            wishesBySubject[subjectId] = {};
+            // Fetch wishes for the user
+            return fetch(`${BASE_URL}/wishes?userId=${userId}`, { credentials: "include" })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        return Promise.reject('Failed to fetch wishes for the user');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        } else {
+            return Promise.resolve(null); // Return null if user ID is not available
         }
-
-        const groups = await fetchGroupsBySubject(subjectId);
-        for (const group of groups) {
-            const groupId = group.id;
-            if (!wishesBySubject[subjectId][groupId]) {
-                wishesBySubject[subjectId][groupId] = 0;
-            }
-            wishesBySubject[subjectId][groupId]++;
-        }
-    }
-
-    return wishesBySubject;
+    }).then((wishes) => {
+        console.log("Wishes:", wishes);
+        return wishes; // Retourne les vœux
+    });
 }
+
 
