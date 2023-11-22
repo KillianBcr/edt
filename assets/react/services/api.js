@@ -137,7 +137,6 @@ export async function updateWish(wishId, updatedWishData) {
 }
 
 export function getLoggedInUserWishes() {
-    // Get the user ID from the 'getMe' function
     return getMe().then((userData) => {
         if (userData && userData.id) {
             const userId = userData.id;
@@ -155,11 +154,10 @@ export function getLoggedInUserWishes() {
                     console.error('Error:', error);
                 });
         } else {
-            return Promise.resolve(null); // Return null if user ID is not available
+            return Promise.resolve(null);
         }
     }).then((wishes) => {
-        console.log("Wishes:", wishes);
-        return wishes; // Retourne les vœux
+        return wishes;
     });
 }
 
