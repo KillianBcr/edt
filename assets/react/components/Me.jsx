@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {getMe, getLoggedInUserWishes, getGroup} from '../services/api';
+import { getMe, getLoggedInUserWishes, getGroup } from '../services/api';
 import "../../styles/me.css";
 
 function Me() {
@@ -12,26 +12,26 @@ function Me() {
             setUser(userData);
 
             if (userData && userData.id) {
-                // Récupérer le vœu unique pour l'utilisateur
-                getLoggedInUserWishes().then((wish) => {
-                    console.log("wish :", wish);
-                    // Assumer que 'groupeType' contient le groupId du vœu
-                    const groupId = extractGroupId(wish["hydra:member"][0].groupeType);
-                    console.log("groupId :", groupId);
-                    if (groupId) {
-                        // Récupérer les détails du groupe en utilisant le groupId du vœu
-                        getGroup(groupId).then((groupData) => {
-                            console.log("userWish :", wish);
-                            console.log("groupData :", groupData);
+                getLoggedInUserWishes().then((wishes) => {
+                    const userWish = wishes["hydra:member"].find(wish => wish.wishUser === `/api/users/${userData.id}`);
 
-                            if (groupData) {
-                                // Définir hourlyRate à partir des détails du groupe
-                                setHourlyRate(groupData.hourlyRate);
-                                console.log("Taux horaire :", hourlyRate);
-                            }
-                        }).catch((groupError) => {
-                            console.error("Erreur lors de la récupération des données du groupe :", groupError);
-                        });
+                    if (userWish) {
+                        const groupId = extractGroupId(userWish.groupeType);
+
+                        if (groupId) {
+                            getGroup(groupId).then((groupData) => {
+                                console.log("userWish :", userWish);
+                                console.log("groupData :", groupData);
+                                if (groupData) {
+                                    setHourlyRate(groupData.hourlyRate);
+                                    console.log("Taux horaire :", hourlyRate);
+                                }
+                            }).catch((groupError) => {
+                                console.error("Erreur lors de la récupération des données du groupe :", groupError);
+                            });
+                        }
+                    } else {
+                        console.log("Aucun vœu trouvé pour l'utilisateur connecté.");
                     }
                 }).catch((wishError) => {
                     console.error("Erreur lors de la récupération des données du vœu :", wishError);
@@ -41,14 +41,12 @@ function Me() {
     }, []);
 
     function extractGroupId(groupType) {
-        // Utiliser une expression régulière pour extraire le nombre de la chaîne "/api/groups/X"
         const matches = groupType.match(/\/api\/groups\/(\d+)/);
         if (matches && matches[1]) {
             return matches[1];
         }
-        return null; // ou lancez une erreur si la chaîne n'est pas dans le format attendu
+        return null;
     }
-
 
     return (
         <div>
@@ -59,16 +57,6 @@ function Me() {
                         <p>Min / Max : {user.minHours} / {user.maxHours}</p>
                         <p>Hourly Rate: {hourlyRate}</p>
                     </div>
-                    {wishData && (
-                        <div>
-                            <p>Groupe Type: {wishData.groupeType}</p>
-                        </div>
-                    )}
-                    {hourlyRate && (
-                        <div>
-                            <p>Hourly Rate: {hourlyRate}</p>
-                        </div>
-                    )}
                 </div>
             )}
         </div>
