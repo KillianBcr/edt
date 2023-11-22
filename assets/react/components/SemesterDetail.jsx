@@ -150,15 +150,19 @@ function Semester() {
                                                                                     const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
                                                                                     const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
                                                                                     var color = "black";
+                                                                                    var picto = "";
                                                                                     if (count > filteredNbGroup.nbGroup){
                                                                                         color = "red";
+                                                                                        picto = "🔴";
                                                                                     }else if (count < filteredNbGroup.nbGroup){
                                                                                         color = "orange";
+                                                                                        picto = "🟠";
                                                                                     }else{
                                                                                         color = "green"
+                                                                                        picto = "🟢";
                                                                                     }
                                                                                     return (
-                                                                                        <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup}</span>
+                                                                                        <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup} {picto}</span>
                                                                                     );
                                                                                 }
                                                                             })
