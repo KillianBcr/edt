@@ -29,7 +29,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Delete(
             security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
-            security: "is_granted('ROLE_ADMIN')",
         ),
         new Put(
             normalizationContext: ['groups' => ['get_Tag']],

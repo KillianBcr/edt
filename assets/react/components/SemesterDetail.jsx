@@ -227,88 +227,95 @@ function Semester() {
                     <ul>
                         {semester.subjects.map((subject) => {
                             const subjectId = subject['@id'].split('/').pop();
-                            const subjectCodeId =  subject.subjectCode.code;
+                            const subjectCodeId = subject.subjectCode.code;
                             const currentYear = subject.academicYear.currentYear;
 
                             const resolvedSubjectCodeId = subjectCodeId;
 
                             if (currentYear === true || currentYear === 1) {
-                            return (
-                                <li key={subjectId} className="semester-li">
-                                    <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name }</h2>
-
-                                    <div className="subjectTags">
-                                        {subject.tags.map((tag, index) => (
-                                            <span key={index} className="tag">
-                                                {tag.name}
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    <br /><br />
-                                    {(userData && userData.roles && userData.roles.includes("ROLE_ADMIN")) ? (
-                                <li key={subject['@id']} className="semester-li">
-                                    <h2 className={"subjectName"}>{resolvedSubjectCodeId + ' - ' + subject.name}</h2>
-                                    {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
-                                        <div>
-                                            <div className="groupe-container">
-                                                {groups === null ? 'Aucun Groupe Trouvé' : (
-                                                    groups.filter((group) => group.subject === subject['@id'])
-                                                        .map((group) => (
-                                                            <ul key={group.id}>
-                                                                <li className="groups">
-                                                                    {nbGroups === null ? (
-                                                                        'Aucun Nombre De Groupe Trouvé'
-                                                                    ) : (
-                                                                        nbGroups
-                                                                            .filter((nbGroup) => nbGroup.groups.includes(`/api/groups/${group.id}`))
-                                                                            .map((filteredNbGroup) => {
-                                                                                if (filteredNbGroup.nbGroup === 0 || filteredNbGroup.nbGroup === null) {
-                                                                                    return null;
-                                                                                } else {
-                                                                                    const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
-                                                                                    const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
-                                                                                    var color = "black";
-                                                                                    var picto = "";
-                                                                                    if (count > filteredNbGroup.nbGroup){
-                                                                                        color = "red";
-                                                                                        picto = "🔴";
-                                                                                    }else if (count < filteredNbGroup.nbGroup){
-                                                                                        color = "orange";
-                                                                                        picto = "🟠";
-                                                                                    }else{
-                                                                                        color = "green"
-                                                                                        picto = "🟢";
-                                                                                    }
-                                                                                    return (
-                                                                                        <span key={`${filteredNbGroup.id}`}>| {count}/{filteredNbGroup.nbGroup}</span>
-                                                                                    );
-                                                                                }
-                                                                            })
-                                                                    )}
-                                                                </li>
-                                                            </ul>
-                                                        ))
-                                                )}
-                                            </div>
-                                            <div className="Postuler-container">
-                                                {userData && (
-                                                    <WishForm subjectId={`/api/subjects/${subjectId}`}
-                                                              onWishAdded={fetchWishesAndUpdateCount}
-                                                              userData={userData}/>
-                                                )}
-                                            </div>
+                                return (
+                                    <li key={subjectId} className="semester-li">
+                                        <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
+                                        <div className="subjectTags">
+                                            {subject.tags.map((tag, index) => (
+                                                <span key={index} className="tag">
+                                                    {tag.name}
+                                                  </span>
+                                            ))}
                                         </div>
-                                    ) : null}
+                                        <br /><br />
+                                        {(userData && userData.roles && userData.roles.includes("ROLE_ADMIN")) ? (
+                                            <li key={subject['@id']} className="semester-li">
+                                                <h2 className={"subjectName"}>{resolvedSubjectCodeId + ' - ' + subject.name}</h2>
+                                                {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
+                                                    <div>
+                                                        <div className="groupe-container">
+                                                            {groups === null ? 'Aucun Groupe Trouvé' : (
+                                                                groups.filter((group) => group.subject === subject['@id'])
+                                                                    .map((group) => (
+                                                                        <ul key={group.id}>
+                                                                            <li className="groups">
+                                                                                {nbGroups === null ? (
+                                                                                    'Aucun Nombre De Groupe Trouvé'
+                                                                                ) : (
+                                                                                    nbGroups
+                                                                                        .filter((nbGroup) => nbGroup.groups.includes(`/api/groups/${group.id}`))
+                                                                                        .map((filteredNbGroup) => {
+                                                                                            if (filteredNbGroup.nbGroup === 0 || filteredNbGroup.nbGroup === null) {
+                                                                                                return null;
+                                                                                            } else {
+                                                                                                const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
+                                                                                                const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
+                                                                                                var color = "black";
+                                                                                                var picto = "";
+                                                                                                if (count > filteredNbGroup.nbGroup) {
+                                                                                                    color = "red";
+                                                                                                    picto = "🔴";
+                                                                                                } else if (count < filteredNbGroup.nbGroup) {
+                                                                                                    color = "orange";
+                                                                                                    picto = "🟠";
+                                                                                                } else {
+                                                                                                    color = "green"
+                                                                                                    picto = "🟢";
+                                                                                                }
+                                                                                                return (
+                                                                                                    <span key={`${filteredNbGroup.id}`}>| {count}/{filteredNbGroup.nbGroup}</span>
+                                                                                                );
+                                                                                            }
+                                                                                        })
+                                                                                )}
+                                                                            </li>
+                                                                        </ul>
+                                                                    ))
+                                                            )}
+                                                        </div>
+                                                        <div className="Postuler-container">
+                                                            {userData && (
+                                                                <WishForm subjectId={`/api/subjects/${subjectId}`}
+                                                                          onWishAdded={fetchWishesAndUpdateCount}
+                                                                          userData={userData} />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ) : null}
 
-                                    {subject.tag.map(async (tag) => {
-                                        const tagData = await getSubjectTag(tag.split('/').pop());
-                                        return (
-                                            <div>{tagData.name}</div>
-                                        );
-                                    })}
-                                </li>
-                            );
+                                                {subject.tag.map(async (tag) => {
+                                                    const tagData = await getSubjectTag(tag.split('/').pop());
+                                                    return (
+                                                        <div>{tagData.name}</div>
+                                                    );
+                                                })}
+                                            </li>
+                                        ) : null}
+
+                                        {subject.tag.map(async (tag) => {
+                                            const tagData = await getSubjectTag(tag.split('/').pop());
+                                            return (
+                                                <div>{tagData.name}</div>
+                                            );
+                                        })}
+                                    </li>
+                                );
                             } else {
                                 return null
                             }
@@ -321,4 +328,5 @@ function Semester() {
 }
 
 export default Semester;
+
 
