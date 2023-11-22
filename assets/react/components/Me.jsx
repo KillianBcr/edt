@@ -4,67 +4,55 @@ import "../../styles/me.css";
 
 function Me() {
     const [user, setUser] = useState(null);
-    const [userWish, setUserWish] = useState(null);
-    const [groupData, setGroupData] = useState(null);
-    const [hourlyRate, setHourlyRate] = useState(null);
-    const [associatedWeeks, setAssociatedWeeks] = useState(null);
+    const [userWishes, setUserWishes] = useState([]);
+    const [hourlyRates, setHourlyRates] = useState([]);
+    const [associatedWeeks, setAssociatedWeeks] = useState([]);
 
     useEffect(() => {
-        getMe().then((userData) => {
-            setUser(userData);
+        const fetchData = async () => {
+            try {
+                const userData = await getMe();
+                setUser(userData);
 
-            if (userData && userData.id) {
-                getLoggedInUserWishes().then((wishes) => {
-                    const wishForUser = wishes["hydra:member"].find(wish => wish.wishUser === `/api/users/${userData.id}`);
+                if (userData && userData.id) {
+                    const wishes = await getLoggedInUserWishes(userData.id);
+                    const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
+                    setUserWishes(userWishesFiltered);
 
-                    if (wishForUser) {
-                        setUserWish(wishForUser);
-                        const groupId = extractGroupId(wishForUser.groupeType);
+                    // Use Promise.all to fetch details for all wishes concurrently
+                    const wishesDetails = await Promise.all(userWishesFiltered.map(async (wish) => {
+                        const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
-                            getGroup(groupId).then((groupData) => {
-                                setGroupData(groupData);
+                            const groupData = await getGroup(groupId);
+                            setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
 
-                                if (groupData) {
-                                    setHourlyRate(groupData.hourlyRate);
+                            // Use Promise.all to fetch details for all weeks concurrently
+                            const weeksDetails = await Promise.all(groupData.weeks.map(getWeekDetails));
+                            setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
 
-                                    // Récupérer les détails des semaines associées au groupe
-                                    Promise.all(groupData.weeks.map(weekUrl => getWeekDetails(weekUrl)))
-                                        .then(weeksDetails => {
-                                            console.log("Associated Weeks Details:", weeksDetails);
-                                            setAssociatedWeeks(weeksDetails);
-                                        })
-                                        .catch(weeksError => {
-                                            console.error("Erreur lors de la récupération des détails des semaines associées :", weeksError);
-                                        });
-                                }
-                            }).catch((groupError) => {
-                                console.error("Erreur lors de la récupération des données du groupe :", groupError);
-                            });
+                            return { wish, groupData, weeksDetails };
                         }
-                    } else {
-                        console.log("Aucun vœu trouvé pour l'utilisateur connecté.");
-                    }
-                }).catch((wishError) => {
-                    console.error("Erreur lors de la récupération des données du vœu :", wishError);
-                });
+                    }));
+
+                    console.log("User Wishes Details:", wishesDetails);
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération des données :", error);
             }
-        });
+        };
+
+        fetchData();
     }, []);
 
     function extractGroupId(groupType) {
         const matches = groupType.match(/\/api\/groups\/(\d+)/);
-        if (matches && matches[1]) {
-            return matches[1];
-        }
-        return null;
+        return matches && matches[1] ? matches[1] : null;
     }
 
     function getWeekDetails(weekUrl) {
-        // Récupérer l'ID de la semaine à partir de l'URL
         const weekId = extractWeekId(weekUrl);
 
-        // Récupérer les détails de la semaine à partir de l'ID
         if (weekId) {
             return fetch(`/api/weeks/${weekId}`, { credentials: "include" })
                 .then(response => {
@@ -92,27 +80,27 @@ function Me() {
                     <div>
                         <p>Total : {user.minHours}</p>
                         <p>Min / Max : {user.minHours} / {user.maxHours}</p>
-                        <p>Hourly Rate: {hourlyRate}</p>
                     </div>
-                    {associatedWeeks && (
-                        <div>
-                            <p>Associated Weeks:</p>
-                            <ul>
-                                {associatedWeeks.map((weekDetails, index) => (
-                                    <li key={index}>
-                                        {weekDetails && (
-                                            <p>Week Number: {weekDetails.weekNumber}, Number of Hours: {weekDetails.numberHours}</p>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
+                    {userWishes.map((wishDetails, index) => (
+                        <div key={index}>
+                            <p>Wish Details: {JSON.stringify(wishDetails.wish)}</p>
+                            {hourlyRates[index] && <p>Hourly Rate: {hourlyRates[index]}</p>}
+                            {associatedWeeks[index] && (
+                                <div>
+                                    <p>Associated Weeks:</p>
+                                    <ul>
+                                        {associatedWeeks[index].map((weekDetails, weekIndex) => (
+                                            <li key={weekIndex}>
+                                                {weekDetails && (
+                                                    <p>Week Number: {weekDetails.weekNumber}, Number of Hours: {weekDetails.numberHours}</p>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
-                    )}
-                    {hourlyRate && (
-                        <div>
-                            <p>Hourly Rate: {hourlyRate}</p>
-                        </div>
-                    )}
+                    ))}
                 </div>
             )}
         </div>

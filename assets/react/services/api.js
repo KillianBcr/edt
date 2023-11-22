@@ -136,29 +136,18 @@ export async function updateWish(wishId, updatedWishData) {
     }
 }
 
-export function getLoggedInUserWishes() {
-    return getMe().then((userData) => {
-        if (userData && userData.id) {
-            const userId = userData.id;
-
-            // Fetch wishes for the user
-            return fetch(`${BASE_URL}/wishes?userId=${userId}`, { credentials: "include" })
-                .then((response) => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        return Promise.reject('Failed to fetch wishes for the user');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-        } else {
-            return Promise.resolve(null);
-        }
-    }).then((wishes) => {
-        return wishes;
-    });
+export function getLoggedInUserWishes(userId) {
+    return fetch(`${BASE_URL}/wishes?userId=${userId}`, { credentials: "include" })
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return Promise.reject('Failed to fetch wishes for the user');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }
 
 
