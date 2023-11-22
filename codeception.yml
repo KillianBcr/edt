@@ -12,13 +12,15 @@ extensions:
     - Codeception\Extension\RunFailed
 modules:
   enabled:
-    - Codeception\Module\REST:
-        url: http://127.0.0.1:8000/api/
+    - REST:
         depends: PhpBrowser
         part: Json
-    - Codeception\Lib\InnerBrowser:
-        part: PhpBrowser
-    - App\Tests\Support\Helper\ApiPlatform
+        url: &url 'http://127.0.0.1:8000/api/'
+  config:
+    PhpBrowser:
+      url: *url
+      headers:
+        Content-Type: application/json
 params:
   - .env
   - .env.test

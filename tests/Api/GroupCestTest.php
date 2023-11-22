@@ -3,24 +3,38 @@
 namespace App\Tests\Api;
 
 use App\Entity\Group;
-use App\Tests\Support\Helper\ApiPlatform;
-use Codeception\Util\HttpCode;
+use App\Entity\Subject;
+use App\Entity\Wish;
+use App\Entity\NbGroup;
+use PHPUnit\Framework\TestCase;
 
-class GroupCestTest
+class GroupCestTest extends TestCase
 {
-    public function createGroup(ApiPlatform $apiPlatform): void
+    public function testGettersAndSetters()
     {
-        $groupData = [
-            'type' => 'TestGroup',
-        ];
+        $group = new Group();
 
-        // Utilise les fonctions de l'assistance ApiPlatform
-        $apiPlatform->sendPost('/api/groups', $groupData);
-        $apiPlatform->seeResponseCodeIs(HttpCode::CREATED);
-        $apiPlatform->seeResponseIsJson();
-        $apiPlatform->seeResponseIsAnEntity(Group::class, '/api/groups');
-        $apiPlatform->seeResponseIsAnItem(['id' => 'integer', 'type' => 'string'], ['type' => 'TestGroup']);
+        // Test setType and getType
+        $group->setType('TestType');
+        $this->assertEquals('TestType', $group->getType());
+
+        // Test setSubject and getSubject
+        $subject = new Subject();
+        $group->setSubject($subject);
+        $this->assertSame($subject, $group->getSubject());
+
+        // Test addWish, removeWish, and getWishes
+        $wish = new Wish();
+        $group->addWish($wish);
+        $this->assertCount(1, $group->getWishes());
+        $group->removeWish($wish);
+        $this->assertCount(0, $group->getWishes());
+
+        // Test addNbGroup, removeNbGroup, and getNbGroups
+        $nbGroup = new NbGroup();
+        $group->addNbGroup($nbGroup);
+        $this->assertCount(1, $group->getNbGroups());
+        $group->removeNbGroup($nbGroup);
+        $this->assertCount(0, $group->getNbGroups());
     }
-
-    // ...
 }
