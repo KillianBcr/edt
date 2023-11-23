@@ -236,9 +236,10 @@ class SubjectController extends AbstractController
     }
 
     #[Route('/subjects', name: 'app_subject')]
-    public function index(SubjectRepository $repository, PaginatorInterface $paginator, Request $request): Response
+    public function index(SubjectRepository $repository, PaginatorInterface $paginator, Request $request, WishRepository $wishRepository): Response
     {
         $subjects = $repository->queryAll();
+        $wishes = $wishRepository->findAll();
         $pagination = $paginator->paginate(
             $subjects,
             $request->query->getInt('page', 1),
@@ -248,6 +249,7 @@ class SubjectController extends AbstractController
         return $this->render('subject/index.html.twig', [
             'subjects' => $subjects,
             'pagination' => $pagination,
+            'wishes' => $wishes,
         ]);
     }
 
