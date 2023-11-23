@@ -177,20 +177,22 @@ class SubjectController extends AbstractController
                             $tabTags = explode(' / ', $tag);
 
                             foreach ($tabTags as $tag) {
-                                $searchTag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $tag]);
-                                if (null == $searchTag) {
-                                    if ('' != $tag) {
+                                if ('' != $tag) {
+                                    $searchTag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $tag]);
+
+                                    if (null == $searchTag) {
                                         $tagCreate = new Tag();
                                         $tagCreate->setName($tag);
                                         $tagCreate->addSubject($subject);
 
                                         $entityManager->persist($tagCreate);
                                         $entityManager->flush();
+                                    } else {
+                                        $searchTag->addSubject($subject);
                                     }
-                                } else {
-                                    $searchTag->addSubject($subject);
                                 }
                             }
+                            $entityManager->flush();
 
                             $subjectCode = $row[4];
 
@@ -221,6 +223,7 @@ class SubjectController extends AbstractController
                                         $week->setNumberHours($numberHours);
                                         $week->setWeekNumber($weekNumber);
                                         $entityManager->persist($week);
+                                        $entityManager->flush();
                                     }
                                     $group->addWeek($week);
                                     $subject->addWeek($week);
