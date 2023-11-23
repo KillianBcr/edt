@@ -53,6 +53,9 @@ class GroupCestTest extends TestCase
             'json' => [
                 'type' => 'TestType',
             ],
+            'headers' => [
+                'Authorization' => '',
+            ],
         ]);
 
         $this->assertEquals(201, $response->getStatusCode());
