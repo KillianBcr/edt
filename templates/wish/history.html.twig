@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wish History{% endblock %}
+
+{% block body %}
+    <h1>Wish History for {{ user.firstname }} {{ user.lastname }}</h1>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Matières</th>
+            <th>Groupes choisis</th>
+            <th>Statut</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for wish in wishes %}
+            <tr>
+                <td>{{ wish.subjectId.name }}</td>
+                <td>{{ wish.chosenGroups }}</td>
+                <td>{{ wish.isAccepted ? 'Yes' : 'No' }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
