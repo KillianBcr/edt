@@ -7,18 +7,24 @@
 
 {% block body %}
     <header class="header">
-        <a href="/" class="logo">EDT</a>
+        <a href="/" class="logo">
+            <img src="{{ asset('/images/logo.png') }}" alt="Logo EDT">
+        </a>
 
         <nav class="navbar">
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('admin') }}">Admin</a>
-                <a href="{{ path('app_subject') }}">Voeux</a>
+                <a href="{{ path('app_subject') }}">Vœux</a>
             {% endif %}
             <a href="#">Historique</a>
             <a href="{{ path('app_upload')}}">Excel</a>
 
-            <a href="{{ path('app_user_show')}}">
+            <a class="icon" href="{{ path('app_user_show')}}">
                 <svg class="bi me-2 opacity-50 theme-icon"><use href="{{ asset('build/images/bootstrap-icons.svg#person-circle') }}"></use></svg>
+            </a>
+
+            <a class="icon" href="/logout">
+                <svg class="bi me-2 opacity-50 theme-icon"><use href="{{ asset('build/images/bootstrap-icons.svg#box-arrow-right') }}"></use></svg>
             </a>
         </nav>
     </header>
