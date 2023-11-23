@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Subject;
+use App\Entity\User;
 use App\Entity\Wish;
 use App\Form\WishType;
 use App\Repository\WishRepository;
@@ -80,5 +81,16 @@ class WishController extends AbstractController
         $manager->flush();
 
         return $this->redirectToRoute('app_wish');
+    }
+
+    #[Route('/wish/history/{userId}', name: 'app_wish_history', methods: ['GET'])]
+    public function history(User $user, WishRepository $wishRepository): Response
+    {
+        $wishes = $wishRepository->findBy(['wishUser' => $user]);
+
+        return $this->render('wish/history.html.twig', [
+            'user' => $user,
+            'wishes' => $wishes,
+        ]);
     }
 }
