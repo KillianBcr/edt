@@ -9,7 +9,6 @@ import {Link} from "wouter";
 function TagForm() {
     const [tagInput, setTagInput] = useState('');
     const [tags, setTags] = useState([]);
-    console.log(tags)
     const handleTagInputChange = (event) => {
         setTagInput(event.target.value);
     };
@@ -29,11 +28,10 @@ function TagForm() {
     };
 
     const handleDeleteTag = (tagToDelete) => () => {
-        const tagId = tagToDelete.tag.id;
+        const tagId = tagToDelete.id;
         console.log(tagToDelete)
         deleteTagFromDatabase(tagId)
             .then(() => {
-                console.log(tagId)
                 setTags((prevTags) => prevTags.filter((tag) => tag.id !== tagId));
             })
             .catch((error) => {
@@ -41,39 +39,27 @@ function TagForm() {
             });
     };
 
-    const [tagsList, setTagsList] = useState(null);
+    const [tagsList] = useState(null);
 
     useEffect(() => {
         fetchTags().then((data) => {
-            setTagsList(data["hydra:member"]);
+            setTags((prevTags) => [...prevTags, ...data["hydra:member"]]);
         });
     }, []);
-
 
     return (
         <Box>
             <div>
-
-                {tagsList ===null ? 'Loading...' :
-                    tagsList.map((tagElement) => (
+                {tags.length === 0 ? 'Loading...' :
+                    tags.map((tag, index) => (
                             <Chip
-                                key={tagElement.id}
-                                label={tagElement.name}
-                                onDelete={handleDeleteTag({tagElement})}
-                                style={{ margin: '4px' }}>
-                            </Chip>
-                        )
-                    )
+                                key={index}
+                                label={tag.name}
+                                onDelete={handleDeleteTag(tag)}
+                                style={{ margin: '4px' }}
+                            />
+                        ))
                 }
-
-                {tags.map((tag, index) => (
-                    <Chip
-                        key={index}
-                        label={tag.name}
-                        onDelete={handleDeleteTag({tag})}
-                        style={{ margin: '4px' }}
-                    />
-                ))}
             </div>
             <div>
                 <TextField
