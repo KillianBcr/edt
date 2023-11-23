@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getMe, getLoggedInUserWishes, getGroup } from '../services/api';
+import { Chart } from 'chart.js/auto';
 import "../../styles/me.css";
 
 function Me() {
@@ -7,6 +8,7 @@ function Me() {
     const [userWishes, setUserWishes] = useState([]);
     const [hourlyRates, setHourlyRates] = useState([]);
     const [associatedWeeks, setAssociatedWeeks] = useState([]);
+    const [showChart, setShowChart] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,23 +21,18 @@ function Me() {
                     const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
                     setUserWishes(userWishesFiltered);
 
-                    // Use Promise.all to fetch details for all wishes concurrently
                     const wishesDetails = await Promise.all(userWishesFiltered.map(async (wish) => {
                         const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
                             const groupData = await getGroup(groupId);
                             setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
-
-                            // Use Promise.all to fetch details for all weeks concurrently
                             const weeksDetails = await Promise.all(groupData.weeks.map(getWeekDetails));
                             setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
 
                             return { wish, groupData, weeksDetails };
                         }
                     }));
-
-                    console.log("User Wishes Details:", wishesDetails);
                 }
             } catch (error) {
                 console.error("Erreur lors de la récupération des données :", error);
@@ -44,6 +41,60 @@ function Me() {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        let myChart;
+
+        if (showChart && associatedWeeks.length > 0) {
+            const flattenWeeks = associatedWeeks.flat();
+
+            const labels = Array.from({ length: 52 }, (_, index) => index + 1);
+
+            const dataValues = labels.map((weekNumber) => {
+                return flattenWeeks
+                    .filter((week) => week.weekNumber === weekNumber)
+                    .reduce((total, week) => total + week.numberHours, 0);
+            });
+
+            const data = {
+                labels: labels,
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: dataValues,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            };
+
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                    },
+                },
+            };
+
+            if (myChart) {
+                myChart.destroy();
+            }
+            myChart = new Chart('myChart', config);
+        }
+
+        return () => {
+            if (myChart) {
+                myChart.destroy();
+            }
+        };
+    }, [showChart, associatedWeeks]);
 
     function extractGroupId(groupType) {
         const matches = groupType.match(/\/api\/groups\/(\d+)/);
@@ -73,6 +124,10 @@ function Me() {
         return matches && matches[1] ? matches[1] : null;
     }
 
+    const handleShowChart = () => {
+        setShowChart(prevShowChart => !prevShowChart);
+    };
+
     return (
         <div>
             {user && (
@@ -80,27 +135,13 @@ function Me() {
                     <div>
                         <p>Total : {user.minHours}</p>
                         <p>Min / Max : {user.minHours} / {user.maxHours}</p>
+                        <button onClick={handleShowChart}>
+                            {showChart ? 'Cacher le graphique' : 'Afficher le graphique'}
+                        </button>
+                        {showChart && <canvas id="myChart" width="400" height="400"></canvas>}
                     </div>
-                    {userWishes.map((wishDetails, index) => (
-                        <div key={index}>
-                            <p>Wish Details: {JSON.stringify(wishDetails.wish)}</p>
-                            {hourlyRates[index] && <p>Hourly Rate: {hourlyRates[index]}</p>}
-                            {associatedWeeks[index] && (
-                                <div>
-                                    <p>Associated Weeks:</p>
-                                    <ul>
-                                        {associatedWeeks[index].map((weekDetails, weekIndex) => (
-                                            <li key={weekIndex}>
-                                                {weekDetails && (
-                                                    <p>Week Number: {weekDetails.weekNumber}, Number of Hours: {weekDetails.numberHours }</p>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+
+
                 </div>
             )}
         </div>
