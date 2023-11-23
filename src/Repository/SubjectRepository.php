@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Semester;
 use App\Entity\Subject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
@@ -28,6 +29,32 @@ class SubjectRepository extends ServiceEntityRepository
             ->select('u')
             ->orderBy('u.id', 'ASC')
             ->getQuery();
+    }
+
+    public function search(string $term): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.name LIKE :term')
+            ->setParameter('term', '%'.$term.'%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySemester(Semester $semester): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.semester = :semester')
+            ->setParameter('semester', $semester)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findSubjectsWithWishes()
+    {
+        return $this->createQueryBuilder('s')
+            ->join('App\Entity\Wish', 'w', 'WITH', 'w.subjectId = s.id')
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

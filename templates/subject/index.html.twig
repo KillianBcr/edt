@@ -4,6 +4,45 @@
 
 {% block body %}
     <h1 class="text-center">Matières</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <form method="get" action="{{ path('app_subject') }}">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Rechercher..." name="search" value="{{ app.request.query.get('search') }}">
+                    <button type="submit" class="btn btn-outline-secondary">Rechercher</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <form method="get" action="{{ path('app_subject') }}">
+                <div class="input-group">
+                    <select class="form-control" name="semester">
+                        <option value="" {% if not selectedSemester %}selected{% endif %}>Tout</option>
+                        {% for semester in semesters %}
+                            <option value="{{ semester.name }}" {% if selectedSemester == semester.name %}selected{% endif %}>{{ semester.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="btn btn-outline-secondary">Filtrer par semestre</button>
+
+                </div>
+                <!--
+                <div class="form-check">
+                    <input type="checkbox" class="custom-control-input" id="showOnlyWithWishes" name="show_only_with_wishes" {% if app.request.query.get('show_only_with_wishes') %}checked{% endif %}>
+                    <label class="custom-control-label" for="showOnlyWithWishes">Avec vœux</label>
+                </div>
+                -->
+            </form>
+        </div>
+    </div>
+
+
+
+
+    </br>
+
     <div class="row justify-content-center">
         {% for subject in pagination %}
             <div class="col-md-4 mb-4">

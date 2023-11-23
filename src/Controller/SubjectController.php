@@ -236,9 +236,30 @@ class SubjectController extends AbstractController
     }
 
     #[Route('/subjects', name: 'app_subject')]
-    public function index(SubjectRepository $repository, PaginatorInterface $paginator, Request $request, WishRepository $wishRepository): Response
+    public function index(SubjectRepository $repository, PaginatorInterface $paginator, Request $request, WishRepository $wishRepository, SemesterRepository $semesterRepository): Response
     {
-        $subjects = $repository->queryAll();
+        $searchTerm = $request->query->get('search');
+        $semesterFilter = $request->query->get('semester');
+        $showOnlyWithWishes = $request->query->get('show_only_with_wishes');
+
+        if ($searchTerm) {
+            $subjects = $repository->search($searchTerm);
+        } else {
+            $subjects = $repository->queryAll();
+        }
+
+        if ($semesterFilter) {
+            $semester = $semesterRepository->findOneBy(['name' => $semesterFilter]);
+
+            if ($semester) {
+                $subjects = $repository->findBySemester($semester);
+            }
+        }
+
+        if ($showOnlyWithWishes) {
+            $subjects = $repository->findSubjectsWithWishes();
+        }
+
         $wishes = $wishRepository->findAll();
         $pagination = $paginator->paginate(
             $subjects,
@@ -246,10 +267,14 @@ class SubjectController extends AbstractController
             9
         );
 
+        $semesters = $semesterRepository->findAll();
+
         return $this->render('subject/index.html.twig', [
             'subjects' => $subjects,
             'pagination' => $pagination,
             'wishes' => $wishes,
+            'semesters' => $semesters,
+            'selectedSemester' => $semesterFilter,
         ]);
     }
 
