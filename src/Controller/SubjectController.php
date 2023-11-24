@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class SubjectController extends AbstractController
 {
@@ -235,6 +236,7 @@ class SubjectController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/subjects', name: 'app_subject')]
     public function index(SubjectRepository $repository, PaginatorInterface $paginator, Request $request, WishRepository $wishRepository, SemesterRepository $semesterRepository): Response
     {
@@ -278,6 +280,7 @@ class SubjectController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/subject/{id}/wishes', name: 'app_subject_wish_show',
         requirements: [
             'id' => "\d+",
