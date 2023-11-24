@@ -112,7 +112,7 @@ function Repartition() {
 
     return (
         <div className="table-container">
-            <h2 className={"repartition"}>Répartition de vos heures</h2>
+            <h2 className={"repartition"}> de vos heures</h2>
             <table>
                 <thead>
                 <tr>
