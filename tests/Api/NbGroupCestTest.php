@@ -5,14 +5,14 @@ namespace App\Tests\Api;
 use App\Entity\Group;
 use App\Entity\NbGroup;
 use App\Entity\Subject;
-use App\Entity\Wish;
 use App\Tests\HttpClientTrait;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
-class GroupCestTest extends TestCase
+class NbGroupCestTest extends TestCase
 {
     use HttpClientTrait;
+
     protected function setUp(): void
     {
         $this->setUpHttpClient();
@@ -20,63 +20,59 @@ class GroupCestTest extends TestCase
 
     public function testGettersAndSetters()
     {
-        $group = new Group();
+        $nbGroup = new NbGroup();
 
-        $group->setType('TestType');
-        $this->assertEquals('TestType', $group->getType());
+        $nbGroup->setNbGroup(5);
+        $this->assertEquals(5, $nbGroup->getNbGroup());
 
         $subject = new Subject();
-        $group->setSubject($subject);
-        $this->assertSame($subject, $group->getSubject());
+        $nbGroup->addSubject($subject);
+        $this->assertCount(1, $nbGroup->getSubject());
+        $nbGroup->removeSubject($subject);
+        $this->assertCount(0, $nbGroup->getSubject());
 
-        $wish = new Wish();
-        $group->addWish($wish);
-        $this->assertCount(1, $group->getWishes());
-        $group->removeWish($wish);
-        $this->assertCount(0, $group->getWishes());
-
-        $nbGroup = new NbGroup();
-        $group->addNbGroup($nbGroup);
-        $this->assertCount(1, $group->getNbGroups());
-        $group->removeNbGroup($nbGroup);
-        $this->assertCount(0, $group->getNbGroups());
+        $group = new Group();
+        $nbGroup->addGroup($group);
+        $this->assertCount(1, $nbGroup->getGroups());
+        $nbGroup->removeGroup($group);
+        $this->assertCount(0, $nbGroup->getGroups());
     }
 
     public function testApiOperations()
     {
         try {
             // POST request
-            $response = $this->httpClient->post('groups', [
+            $response = $this->httpClient->post('nbGroups', [
                 'json' => [
-                    'type' => 'TestType',
+                    'nbGroup' => 5,
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
             $data = json_decode($response->getBody(), true);
-            $groupId = $data['id'];
+            $nbGroupId = $data['id'];
 
             // GET request
-            $response = $this->httpClient->get("groups/{$groupId}");
+            $response = $this->httpClient->get("nbGroups/{$nbGroupId}");
             $this->assertEquals(401, $response->getStatusCode());
 
             // PUT request
-            $response = $this->httpClient->put("groups/{$groupId}", [
+            $response = $this->httpClient->put("nbGroups/{$nbGroupId}", [
                 'json' => [
-                    'type' => 'UpdatedType',
+                    'nbGroup' => 10,
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
 
             // PATCH request
-            $response = $this->httpClient->patch("groups/{$groupId}", [
+            $response = $this->httpClient->patch("nbGroups/{$nbGroupId}", [
                 'json' => [
-                    'type' => 'PatchedType',
+                    'nbGroup' => 8,
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
 
             // DELETE request
-            $response = $this->httpClient->delete("groups/{$groupId}");
+            $response = $this->httpClient->delete("nbGroups/{$nbGroupId}");
             $this->assertEquals(401, $response->getStatusCode());
         } catch (ClientException $e) {
             // Catch the exception and assert the expected status code
