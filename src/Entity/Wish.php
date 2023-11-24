@@ -60,6 +60,7 @@ class Wish
     private ?User $wishUser = null;
 
     #[ORM\Column]
+    #[Groups(['get_Wish', 'set_Wish'])]
     private ?bool $isAccepted = false;
 
     public function getId(): ?int
