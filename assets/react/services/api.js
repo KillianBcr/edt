@@ -24,15 +24,16 @@ export function getGroup(id) {
 
 
 
-export function fetchGroupsBySubject(subjectId) {
-    return fetch(`${BASE_URL}/groups?subject=${subjectId}`)
-        .then((response) => {
-            if (response.ok) {
-                return response.json();
-            }
-            return Promise.reject('Failed to fetch groups');
-        });
-}
+export const fetchGroupsBySubject = async (subjectId) => {
+    try {
+        const response = await fetch(`/api/groups?subject=${subjectId}`);
+        const data = await response.json();
+        return data['hydra:member'];
+    } catch (error) {
+        console.error('Error in fetchGroupsBySubject:', error);
+        throw error; // Ajoute cette ligne pour propager l'erreur
+    }
+};
 export function getMe()
 {
     return fetch(`${BASE_URL}/me`, {credentials: "include"}).then((response) => {

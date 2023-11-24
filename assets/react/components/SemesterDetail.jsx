@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-    getSemester,
-    fetchNbGroup,
-    fetchGroups,
-    getMe,
-} from '../services/api';
+import { getSemester, fetchNbGroup, fetchGroups, getMe } from '../services/api';
 import { useRoute } from 'wouter';
 import WishForm from './WishForm';
-import "../../styles/semesterDetail.css"
+import "../../styles/semesterDetail.css";
 
 function Semester() {
     const [semester, setSemester] = useState(null);
@@ -19,17 +14,26 @@ function Semester() {
 
     useEffect(() => {
         (async () => {
-            setGroups(await fetchGroups())
+            try {
+                const fetchedGroupsResponse = await fetchGroups();
+                //console.log('Fetched Groups:', fetchedGroupsResponse);
 
-            const groupData = await fetchNbGroup();
-            if (Array.isArray(groupData['hydra:member'])) {
-                setNbGroups(groupData['hydra:member']);
-            } else if (Array.isArray(groupData.nbGroups)) {
-                setNbGroups(groupData.nbGroups);
-            } else {
-                console.error("Data from API is not an array:", groupData);
+                // Assure-toi que les données sont bien encapsulées dans un objet
+                const fetchedGroups = fetchedGroupsResponse['hydra:member'] || [];
+                setGroups(fetchedGroups);
+
+                const groupData = await fetchNbGroup();
+                if (Array.isArray(groupData['hydra:member'])) {
+                    setNbGroups(groupData['hydra:member']);
+                } else if (Array.isArray(groupData.nbGroups)) {
+                    setNbGroups(groupData.nbGroups);
+                } else {
+                    console.error("Data from API is not an array:", groupData);
+                }
+            } catch (error) {
+                console.error("An error occurred while fetching groups:", error);
             }
-        })()
+        })();
     }, []);
 
     useEffect(() => {
@@ -49,7 +53,7 @@ function Semester() {
             }
 
             const allWishes = await allWishesResponse.json();
-            console.log('All Wishes:', allWishes);
+            //console.log('All Wishes:', allWishes);
 
             const wishesBySubjectData = {};
 
@@ -65,7 +69,7 @@ function Semester() {
                     }
                 }
 
-                console.log('Wishes Count by Group:', wishesBySubjectData);
+                //console.log('Wishes Count by Group:', wishesBySubjectData);
                 setWishesBySubject(wishesBySubjectData); // Mise à jour de l'état avec les valeurs cumulées
             } else {
                 console.error("hydra:member n'est pas un tableau :", allWishes['hydra:member']);
@@ -94,7 +98,7 @@ function Semester() {
             }
 
             const allWishes = await allWishesResponse.json();
-            console.log('All Wishes:', allWishes);
+            //console.log('All Wishes:', allWishes);
 
             const wishesBySubjectData = {};
 
@@ -110,7 +114,7 @@ function Semester() {
                     }
                 }
 
-                console.log('Wishes Count by Group:', wishesBySubjectData);
+                //console.log('Wishes Count by Group:', wishesBySubjectData);
                 setWishesBySubject(wishesBySubjectData); // Mise à jour de l'état avec les valeurs cumulées
             } else {
                 console.error("hydra:member n'est pas un tableau :", allWishes['hydra:member']);
@@ -133,13 +137,13 @@ function Semester() {
                                     {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
                                         <div>
                                             <div className="groupe-container">
-                                                {groups === null ? 'Aucun Groupe Trouvé' : (
+                                                {groups === null ? 'No Groups Found' : (
                                                     groups.filter((group) => group.subject === subject['@id'])
                                                         .map((group) => (
                                                             <ul key={group.id}>
                                                                 <li className="groups">
                                                                     {nbGroups === null ? (
-                                                                        'Aucun Nombre De Groupe Trouvé'
+                                                                        'No Group Numbers Found'
                                                                     ) : (
                                                                         nbGroups
                                                                             .filter((nbGroup) => nbGroup.groups.includes(`/api/groups/${group.id}`))
@@ -154,10 +158,10 @@ function Semester() {
                                                                                     if (count > filteredNbGroup.nbGroup){
                                                                                         color = "red";
                                                                                         picto = "🔴";
-                                                                                    }else if (count < filteredNbGroup.nbGroup){
+                                                                                    } else if (count < filteredNbGroup.nbGroup){
                                                                                         color = "orange";
                                                                                         picto = "🟠";
-                                                                                    }else{
+                                                                                    } else {
                                                                                         color = "green"
                                                                                         picto = "🟢";
                                                                                     }
@@ -174,7 +178,16 @@ function Semester() {
                                             </div>
                                             <div className="Postuler-container">
                                                 {userData && (
-                                                    <WishForm subjectId={`/api/subjects/${subjectId}`} onWishAdded={fetchWishesAndUpdateCount} userData={userData} />
+                                                    <WishForm
+                                                        subjectId={`/api/subjects/${subjectId}`}
+                                                        onWishAdded={() => {
+                                                            // Refresh wishes count by subject after a new wish is added
+                                                            getWishesCountBySubject();
+                                                        }}
+                                                        userData={userData}
+                                                        groups={groups}
+                                                        wishesBySubject={wishesBySubject}
+                                                    />
                                                 )}
                                             </div>
                                         </div>
@@ -190,4 +203,3 @@ function Semester() {
 }
 
 export default Semester;
-

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { getMe, fetchGroupsBySubject } from '../services/api';
+import { fetchGroups, fetchGroupsBySubject } from '../services/api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function WishForm({ subjectId, onWishAdded, userData  }) {
+function WishForm({ subjectId, onWishAdded, userData }) {
     const [chosenGroups, setChosenGroups] = useState('');
     const [groupeType, setGroupeType] = useState('');
+    const [allGroups, setAllGroups] = useState([]);
     const [groupeTypes, setGroupeTypes] = useState([]);
+
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 if (subjectId) {
                     const data = await fetchGroupsBySubject(subjectId);
-                    setGroupeTypes(data);
+                    setAllGroups(data);
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des données :', error);
@@ -23,17 +25,26 @@ function WishForm({ subjectId, onWishAdded, userData  }) {
         fetchData();
     }, [subjectId]);
 
+    useEffect(() => {
+        if (subjectId && allGroups.length > 0) {
+            const filteredGroups = allGroups.filter((group) => group.subject === subjectId);
+            setGroupeTypes(filteredGroups);
+        }
+    }, [subjectId, allGroups]);
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        const selectedGroup = groupeTypes.find((group) => group.id === groupeType);
-        const groupId = selectedGroup ? selectedGroup.id : '';
 
+        // Utilise groupeType directement, pas besoin de chercher dans allGroups
         const formData = {
             chosenGroups,
             subjectId,
-            groupeType,
+            groupeType: `/api/groups/${groupeType}`,
             wishUser: `/api/users/${userData.id}`,
+            isAccepted: true, // Ajoute cela si nécessaire
         };
+
+        console.log("formData",formData)
 
         fetch('/api/wishes', {
             method: 'POST',
@@ -92,6 +103,7 @@ function WishForm({ subjectId, onWishAdded, userData  }) {
 
             <div className="form-group">
                 <label htmlFor="groupeType">Type de groupe</label>
+
                 <select
                     id="groupeType"
                     name="groupeType"
@@ -100,15 +112,13 @@ function WishForm({ subjectId, onWishAdded, userData  }) {
                     className="form-control"
                 >
                     <option value="">Sélectionnez un groupe</option>
-                    {groupeTypes
-                        .filter((group) => {
-                            return group.subject === subjectId;
-                        })
-                        .map((group) => (
-                            <option key={group.id} value={`/api/groups/${group.id}`}>
+                    {groupeTypes.map((group) => {
+                        return (
+                            <option key={group.id} value={group.id}>
                                 {group.type}
                             </option>
-                        ))}
+                        );
+                    })}
                 </select>
             </div>
 
