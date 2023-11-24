@@ -95,7 +95,7 @@ function Repartition() {
         if (selectedWishId) {
             try {
                 const updatedWish = {
-                    chosenGroups: modifiedChosenGroups,
+                    chosenGroups: parseInt(modifiedChosenGroups, 10),
                     groupName: modifiedGroupName
                 };
                 await updateWish(selectedWishId, updatedWish);
@@ -134,7 +134,7 @@ function Repartition() {
                 ))}
                 <tr>
                     <td>
-                        <Link to="/react/semesters/1" className="ajouter-button">Ajouter des heures</Link>
+                        <Link to="/react/semesters/1" className="btn btn-primary">Ajouter des heures</Link>
                     </td>
                 </tr>
                 </tbody>
@@ -147,7 +147,7 @@ function Repartition() {
                         margin="dense"
                         id="modifiedChosenGroups"
                         label="Nombre de groupe"
-                        type="text"
+                        type="number"
                         fullWidth
                         variant="standard"
                         value={modifiedChosenGroups}
@@ -162,6 +162,7 @@ function Repartition() {
                         variant="standard"
                         value={modifiedGroupName}
                         onChange={(e) => setModifiedGroupName(e.target.value)}
+                        disabled={true}
                     />
                 </DialogContent>
                 <DialogActions>
