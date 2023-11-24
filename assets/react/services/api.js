@@ -123,7 +123,7 @@ export async function updateWish(wishId, updatedWishData) {
     const response = await fetch(url, {
         method: 'PATCH',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/merge-patch+json',
         },
         body: JSON.stringify(updatedWishData),
     });
