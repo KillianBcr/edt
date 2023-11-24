@@ -150,4 +150,10 @@ export function getLoggedInUserWishes(userId) {
         });
 }
 
+export function fetchWeeks() {
+    return fetch(`${BASE_URL}/weeks`).then((response) =>
+        response.ok ? response.json() : Promise.resolve(null),
+    );
+}
+
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getMe, getLoggedInUserWishes, getGroup } from '../services/api';
+import { getMe, getLoggedInUserWishes, getGroup, fetchWeeks } from '../services/api';
 import { Chart } from 'chart.js/auto';
 import "../../styles/me.css";
 
@@ -21,13 +21,16 @@ function Me() {
                     const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
                     setUserWishes(userWishesFiltered);
 
+                    const allWeeks = await fetchWeeks();
+
                     const wishesDetails = await Promise.all(userWishesFiltered.map(async (wish) => {
                         const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
                             const groupData = await getGroup(groupId);
                             setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
-                            const weeksDetails = await Promise.all(groupData.weeks.map(getWeekDetails));
+                            const weeksDetails = allWeeks['hydra:member']
+                                .filter(week => groupData.weeks.includes(week['@id']));
                             setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
 
                             return { wish, groupData, weeksDetails };
@@ -62,13 +65,14 @@ function Me() {
                     label: 'My First Dataset',
                     data: dataValues,
                     fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
+                    borderColor: 'rgb(0, 200, 255)',
+                    backgroundColor: 'rgb(0, 200, 255)',
                     tension: 0.1
                 }]
             };
 
             const config = {
-                type: 'line',
+                type: 'bar',
                 data: data,
                 options: {
                     scales: {
@@ -101,29 +105,6 @@ function Me() {
         return matches && matches[1] ? matches[1] : null;
     }
 
-    function getWeekDetails(weekUrl) {
-        const weekId = extractWeekId(weekUrl);
-
-        if (weekId) {
-            return fetch(`/api/weeks/${weekId}`, { credentials: "include" })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        return Promise.reject('Failed to fetch week details');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    }
-
-    function extractWeekId(weekUrl) {
-        const matches = weekUrl.match(/\/api\/weeks\/(\d+)/);
-        return matches && matches[1] ? matches[1] : null;
-    }
-
     const handleShowChart = () => {
         setShowChart(prevShowChart => !prevShowChart);
     };
@@ -140,8 +121,6 @@ function Me() {
                         </button>
                         {showChart && <canvas id="myChart" width="400" height="400"></canvas>}
                     </div>
-
-
                 </div>
             )}
         </div>
