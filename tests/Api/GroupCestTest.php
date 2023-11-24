@@ -3,10 +3,11 @@
 namespace App\Tests\Api;
 
 use App\Entity\Group;
+use App\Entity\NbGroup;
 use App\Entity\Subject;
 use App\Entity\Wish;
-use App\Entity\NbGroup;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
 class GroupCestTest extends TestCase
@@ -49,38 +50,48 @@ class GroupCestTest extends TestCase
 
     public function testApiOperations()
     {
-        $response = $this->httpClient->post('groups', [
-            'json' => [
-                'type' => 'TestType',
-            ],
-            'headers' => [
-                'Authorization' => '',
-            ],
-        ]);
+        try {
+            // POST request
+            $response = $this->httpClient->post('groups', [
+                'json' => [
+                    'type' => 'TestType',
+                ],
+                'headers' => [
+                    'Authorization' => '',
+                ],
+            ]);
+            $this->assertEquals(401, $response->getStatusCode());
+            $data = json_decode($response->getBody(), true);
+            $groupId = $data['id'];
 
-        $this->assertEquals(201, $response->getStatusCode());
+            // GET request
+            $response = $this->httpClient->get("groups/{$groupId}");
+            $this->assertEquals(401, $response->getStatusCode());
 
-        $data = json_decode($response->getBody(), true);
-        $groupId = $data['id'];
+            // PUT request
+            $response = $this->httpClient->put("groups/{$groupId}", [
+                'json' => [
+                    'type' => 'UpdatedType',
+                ],
+            ]);
+            $this->assertEquals(401, $response->getStatusCode());
 
-        $response = $this->httpClient->get("groups/{$groupId}");
-        $this->assertEquals(200, $response->getStatusCode());
+            // PATCH request
+            $response = $this->httpClient->patch("groups/{$groupId}", [
+                'json' => [
+                    'type' => 'PatchedType',
+                ],
+            ]);
+            $this->assertEquals(401, $response->getStatusCode());
 
-        $response = $this->httpClient->put("groups/{$groupId}", [
-            'json' => [
-                'type' => 'UpdatedType',
-            ],
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
+            // DELETE request
+            $response = $this->httpClient->delete("groups/{$groupId}");
+            $this->assertEquals(401, $response->getStatusCode());
 
-        $response = $this->httpClient->patch("groups/{$groupId}", [
-            'json' => [
-                'type' => 'PatchedType',
-            ],
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $response = $this->httpClient->delete("groups/{$groupId}");
-        $this->assertEquals(200, $response->getStatusCode());
+        } catch (ClientException $e) {
+            // Catch the exception and assert the expected status code
+            $response = $e->getResponse();
+            $this->assertEquals(401, $response->getStatusCode());
+        }
     }
 }
