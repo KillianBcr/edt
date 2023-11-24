@@ -83,14 +83,20 @@ class WishController extends AbstractController
         return $this->redirectToRoute('app_wish');
     }
 
-    #[Route('/wish/history/{userId}', name: 'app_wish_history', methods: ['GET'])]
-    public function history(User $user, WishRepository $wishRepository): Response
+    #[Route('/history', name: 'app_wish_history', methods: ['GET'])]
+    public function history(WishRepository $wishRepository, Request $request): Response
     {
-        $wishes = $wishRepository->findBy(['wishUser' => $user]);
+        $academicYears = $wishRepository->findDistinctAcademicYears();
+
+        $selectedAcademicYear = $request->query->get('academicYear');
+        $wishesByYear = $wishRepository->findAllWishesGroupedByYear($selectedAcademicYear);
+
+        dump($wishesByYear);
 
         return $this->render('wish/history.html.twig', [
-            'user' => $user,
-            'wishes' => $wishes,
+            'wishesByYear' => $wishesByYear,
+            'academicYears' => $academicYears,
+            'selectedAcademicYear' => $selectedAcademicYear,
         ]);
     }
 }
