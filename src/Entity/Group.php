@@ -51,11 +51,11 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['group:read'])]
+    #[Groups(['get_Group'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 50)]
-    #[Groups(['group:read', 'group:write'])]
+    #[Groups(['get_Group', 'set_Group'])]
     private ?string $type = null;
 
     #[ORM\OneToMany(mappedBy: 'groupeType', targetEntity: Wish::class)]
@@ -70,7 +70,7 @@ class Group
 
     #[ORM\ManyToOne(inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['group:read'])]
+    #[Groups(['get_Group', 'set_Group'])]
     private ?Subject $subject = null;
 
     #[ORM\Column]

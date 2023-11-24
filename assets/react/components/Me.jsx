@@ -36,10 +36,19 @@ function Me() {
                             // Find the relevant group data locally
                             const groupData = relevantGroupData.find(group => group["@id"] === `/api/groups/${groupId}`);
                             if (groupData) {
-                                setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
-
+                                // Find weeks details
                                 const weeksDetails = allWeeks['hydra:member']
                                     .filter(week => groupData.weeks.includes(week['@id']));
+
+                                // Sum the number of hours for each week
+                                const totalHours = weeksDetails.reduce((total, week) => total + week.numberHours, 0);
+
+                                // Multiply the total hours by chosenGroups
+                                const multipliedHours = totalHours * wish.chosenGroups;
+
+                                console.log(wish.chosenGroups, totalHours, multipliedHours);
+
+                                setHourlyRates(prevRates => [...prevRates, multipliedHours]);
                                 setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
 
                                 return { wish, groupData, weeksDetails };
@@ -55,6 +64,7 @@ function Me() {
         fetchData();
     }, []);
 
+
     useEffect(() => {
         let myChart;
 
@@ -64,10 +74,15 @@ function Me() {
             const labels = Array.from({ length: 52 }, (_, index) => index + 1);
 
             const dataValues = labels.map((weekNumber) => {
-                return flattenWeeks
+                const totalHoursForWeek = flattenWeeks
                     .filter((week) => week.weekNumber === weekNumber)
                     .reduce((total, week) => total + week.numberHours, 0);
+
+                console.log(`Week ${weekNumber}: Total Hours - ${totalHoursForWeek}`);
+
+                return totalHoursForWeek;
             });
+
 
             const data = {
                 labels: labels,
