@@ -156,4 +156,9 @@ export function fetchWeeks() {
     );
 }
 
+function extractGroupId(groupUrl) {
+    const matches = groupUrl.match(/\/api\/groups\/(\d+)/);
+    return matches && matches[1] ? matches[1] : null;
+}
+
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getMe, getLoggedInUserWishes, getGroup, fetchWeeks } from '../services/api';
+import {getMe, getLoggedInUserWishes, getGroup, fetchWeeks, fetchGroups} from '../services/api';
 import { Chart } from 'chart.js/auto';
 import "../../styles/me.css";
 
@@ -21,14 +21,16 @@ function Me() {
                     const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
                     setUserWishes(userWishesFiltered);
 
-                    const allWeeks = await fetchWeeks();
+                    const allGroups = await fetchGroups();
+                    const allWeeks = await fetchWeeks(); // Fetch all weeks
 
                     const wishesDetails = await Promise.all(userWishesFiltered.map(async (wish) => {
                         const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
-                            const groupData = await getGroup(groupId);
+                            const groupData = allGroups["hydra:member"].find(group => group["@id"] === `/api/groups/${groupId}`);
                             setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
+
                             const weeksDetails = allWeeks['hydra:member']
                                 .filter(week => groupData.weeks.includes(week['@id']));
                             setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
