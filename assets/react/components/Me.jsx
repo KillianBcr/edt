@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {getMe, getLoggedInUserWishes, getGroup, fetchWeeks, fetchGroups} from '../services/api';
+import {getMe, getLoggedInUserWishes, fetchWeeks, fetchGroups} from '../services/api';
 import { Chart } from 'chart.js/auto';
 import "../../styles/me.css";
 
@@ -21,21 +21,29 @@ function Me() {
                     const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
                     setUserWishes(userWishesFiltered);
 
-                    const allGroups = await fetchGroups();
+                    const allGroups = await fetchGroups(); // Fetch all groups
                     const allWeeks = await fetchWeeks(); // Fetch all weeks
+
+                    const relevantGroupData = allGroups["hydra:member"].filter(group => {
+                        const groupId = extractGroupId(group["@id"]);
+                        return userWishesFiltered.some(wish => extractGroupId(wish.groupeType) === groupId);
+                    });
 
                     const wishesDetails = await Promise.all(userWishesFiltered.map(async (wish) => {
                         const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
-                            const groupData = allGroups["hydra:member"].find(group => group["@id"] === `/api/groups/${groupId}`);
-                            setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
+                            // Find the relevant group data locally
+                            const groupData = relevantGroupData.find(group => group["@id"] === `/api/groups/${groupId}`);
+                            if (groupData) {
+                                setHourlyRates(prevRates => [...prevRates, groupData.hourlyRate]);
 
-                            const weeksDetails = allWeeks['hydra:member']
-                                .filter(week => groupData.weeks.includes(week['@id']));
-                            setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
+                                const weeksDetails = allWeeks['hydra:member']
+                                    .filter(week => groupData.weeks.includes(week['@id']));
+                                setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
 
-                            return { wish, groupData, weeksDetails };
+                                return { wish, groupData, weeksDetails };
+                            }
                         }
                     }));
                 }
