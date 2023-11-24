@@ -21,6 +21,41 @@ class WishRepository extends ServiceEntityRepository
         parent::__construct($registry, Wish::class);
     }
 
+    public function findAllWishesGroupedByYear($selectedAcademicYear): array
+    {
+        $query = $this->createQueryBuilder('w')
+            ->select('w', 's', 'y.academicYear', 'u.firstname', 'u.lastname')
+            ->join('w.subjectId', 's')
+            ->join('s.academicYear', 'y')
+            ->join('w.wishUser', 'u');
+
+        if ($selectedAcademicYear) {
+            $query->andWhere('y.academicYear = :selectedAcademicYear')
+                ->setParameter('selectedAcademicYear', $selectedAcademicYear);
+        }
+
+        $result = $query
+            ->orderBy('y.academicYear', 'ASC')
+            ->getQuery()
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+        return $result;
+    }
+
+    public function findDistinctAcademicYears(): array
+    {
+        $result = $this->createQueryBuilder('w')
+            ->select('DISTINCT y.academicYear')
+            ->join('w.subjectId', 's')
+            ->join('s.academicYear', 'y')
+            ->orderBy('y.academicYear', 'ASC')
+            ->getQuery()
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+
+        return array_column($result, 'academicYear');
+    }
+
+
     //    /**
     //     * @return Wish[] Returns an array of Wish objects
     //     */
