@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Group from "../components/GroupDetail";
 import SemesterDetail from "../components/SemesterDetail";
 import Graph from "../components/Graph";
+import {Wish} from "../components/Wish";
 
 function App() {
     return (
@@ -29,9 +30,7 @@ function App() {
                     <Semesterlist/>
                 </Route>
                 <Route path="/react/semesters/:id">
-                    <Semesterlist/>
-                    <Semester/>
-                    <ToastContainer/>
+                    <Wish />
                 </Route>
             </Router>
         </div>

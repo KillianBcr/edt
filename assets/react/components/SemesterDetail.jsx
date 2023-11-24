@@ -4,7 +4,7 @@ import { useRoute } from 'wouter';
 import WishForm from './WishForm';
 import "../../styles/semesterDetail.css";
 
-function Semester() {
+function Semester({ selectedTags }) {
     const [semester, setSemester] = useState(null);
     const [, params] = useRoute('/react/semesters/:id');
     const [userData, setUserData] = useState(null);
@@ -84,6 +84,9 @@ function Semester() {
                         }
                         return tagUrl;
                     });
+
+                    // S(il 'ny pas le tag
+
                     return subject;
                 });
 

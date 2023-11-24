@@ -3,7 +3,7 @@ import {fetchSemesters} from '../services/api';
 import {Link} from 'wouter';
 import "../../styles/semesterList.css"
 import PopUpTags from "./AddTags";
-function Semesterlist() {
+function Semesterlist({ changeSelectedTag }) {
     const [semesters, setSemesters] = useState(null);
 
     useEffect(() => {
@@ -27,7 +27,7 @@ function Semesterlist() {
                 }
             </div>
             <div className={"tagsButton"}>
-                <PopUpTags/>
+                <PopUpTags changeSelectedTag={changeSelectedTag}/>
             </div>
         </div>
     );

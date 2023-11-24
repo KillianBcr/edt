@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import {addTagToDatabase, deleteTagFromDatabase, fetchSemesters, fetchTags} from "../services/api";
 import {Link} from "wouter";
 
-function TagForm() {
+function TagForm({ changeSelectedTag }) {
     const [tagInput, setTagInput] = useState('');
     const [tags, setTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
@@ -40,8 +40,6 @@ function TagForm() {
             });
     };
 
-    const [tagsList] = useState(null);
-
     useEffect(() => {
         fetchTags().then((data) => {
             setTags((prevTags) => [...prevTags, ...data["hydra:member"]]);
@@ -60,8 +58,10 @@ function TagForm() {
                 return [...prevSelectedTags, tag];
             }
         });
+
+        changeSelectedTag([...selectedTags, tag]);
     }
-    console.log(selectedTags)
+
     return (
         <Box>
             <div>

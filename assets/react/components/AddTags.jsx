@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TagForm from "./Tags";
 
-export default function PopUpTags() {
+export default function PopUpTags({ changeSelectedTag }) {
     const [open, setOpen] = React.useState(false);
     const [databaseTags, setDatabaseTags] = React.useState([]);
 
@@ -34,7 +34,7 @@ export default function PopUpTags() {
                 </DialogTitle>
                 <DialogContent>
                     <div id="pop-up-tags-description">
-                        <TagForm/>
+                        <TagForm changeSelectedTag={changeSelectedTag}/>
                     </div>
                 </DialogContent>
                 <DialogActions>
