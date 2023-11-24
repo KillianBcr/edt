@@ -1,0 +1,33 @@
+<div class="row justify-content-center">
+    {% for subject in pagination %}
+        <div class="col-md-4 mb-4">
+            <div class="card mx-auto">
+                <div class="card-body">
+                    <h2 class="card-title">{{ subject.subjectCode.code}}
+                        {% set wishSubjectIds = wishes|map(wish => wish.subjectId.id) %}
+                        {% if subject.id in wishSubjectIds %}
+                            <span class="badge bg-success font-weight-normal" style="font-size: 1rem;">Avec vœux</span>
+                        {% else %}
+                            <span class="badge bg-danger font-weight-normal" style="font-size: 1rem;">Aucun vœu</span>
+                        {% endif %}
+                    </h2>
+                    <dl>
+                        <dd>
+                            {% if subject.name|length > 35 %}
+                                {{ subject.name|slice(0, 35) }}(..)
+                                <span style="display: none;">{{ subject.name }}</span>
+                            {% else %}
+                                {{ subject.name }}
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    <button type="button" class="btn btn-primary" onclick="window.location='{{ path('app_subject_wish_show', {'id': subject.id}) }}'">Voir les vœux</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="pagination justify-content-center">
+    {{ knp_pagination_render(pagination) }}
+</div>
