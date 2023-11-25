@@ -51,11 +51,11 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['group:read'])]
+    #[Groups(['get_Group'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 50)]
-    #[Groups(['group:read', 'group:write'])]
+    #[Groups(['get_Group', 'set_Group'])]
     private ?string $type = null;
 
     #[ORM\OneToMany(mappedBy: 'groupeType', targetEntity: Wish::class)]
@@ -65,11 +65,12 @@ class Group
     {
         $this->wishes = new ArrayCollection();
         $this->nbGroups = new ArrayCollection();
+        $this->weeks = new ArrayCollection();
     }
 
     #[ORM\ManyToOne(inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['group:read'])]
+    #[Groups(['get_Group', 'set_Group'])]
     private ?Subject $subject = null;
 
     #[ORM\Column]
@@ -77,6 +78,9 @@ class Group
 
     #[ORM\ManyToMany(targetEntity: NbGroup::class, mappedBy: 'groups')]
     private Collection $nbGroups;
+
+    #[ORM\ManyToMany(targetEntity: Week::class, mappedBy: 'groups')]
+    private Collection $weeks;
 
     public function getId(): ?int
     {
@@ -171,6 +175,33 @@ class Group
     {
         if ($this->nbGroups->removeElement($nbGroup)) {
             $nbGroup->removeGroup($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Week>
+     */
+    public function getWeeks(): Collection
+    {
+        return $this->weeks;
+    }
+
+    public function addWeek(Week $week): static
+    {
+        if (!$this->weeks->contains($week)) {
+            $this->weeks->add($week);
+            $week->addGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWeek(Week $week): static
+    {
+        if ($this->weeks->removeElement($week)) {
+            $week->removeGroup($this);
         }
 
         return $this;

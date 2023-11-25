@@ -211,6 +211,7 @@ class SubjectController extends AbstractController
                                         $week->setWeekNumber($weekNumber);
                                         $entityManager->persist($week);
                                     }
+                                    $group->addWeek($week);
                                     $subject->addWeek($week);
                                 }
                             }

@@ -136,26 +136,25 @@ export async function updateWish(wishId, updatedWishData) {
     }
 }
 
-export async function WishesBySubject() {
-    const allWishes = await fetchWishes();
-    const wishesBySubject = {};
-
-    for (const wish of allWishes) {
-        const subjectId = wish.subjectId;
-        if (!wishesBySubject[subjectId]) {
-            wishesBySubject[subjectId] = {};
-        }
-
-        const groups = await fetchGroupsBySubject(subjectId);
-        for (const group of groups) {
-            const groupId = group.id;
-            if (!wishesBySubject[subjectId][groupId]) {
-                wishesBySubject[subjectId][groupId] = 0;
+export function getLoggedInUserWishes(userId) {
+    return fetch(`${BASE_URL}/wishes?userId=${userId}`, { credentials: "include" })
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return Promise.reject('Failed to fetch wishes for the user');
             }
-            wishesBySubject[subjectId][groupId]++;
-        }
-    }
-
-    return wishesBySubject;
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }
+
+export function fetchWeeks() {
+    return fetch(`${BASE_URL}/weeks`).then((response) =>
+        response.ok ? response.json() : Promise.resolve(null),
+    );
+}
+
+
 

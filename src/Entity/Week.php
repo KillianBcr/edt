@@ -59,9 +59,13 @@ class Week
     #[ORM\ManyToMany(targetEntity: Subject::class, inversedBy: 'weeks')]
     private Collection $subject;
 
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'weeks')]
+    private Collection $groups;
+
     public function __construct()
     {
         $this->subject = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,6 +127,30 @@ class Week
         if (!$this->subject->contains($subject)) {
             $this->subject->add($subject);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Group>
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): static
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): static
+    {
+        $this->groups->removeElement($group);
 
         return $this;
     }
