@@ -5,75 +5,11 @@
 {% block body %}
     <h1 class="text-center">Matières</h1>
 
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <form method="get" action="{{ path('app_subject') }}">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Rechercher..." name="search" value="{{ app.request.query.get('search') }}">
-                    <button type="submit" class="btn btn-outline-secondary">Rechercher</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="col-md-4">
-            <form method="get" action="{{ path('app_subject') }}">
-                <div class="input-group">
-                    <select class="form-control" name="semester">
-                        <option value="" {% if not selectedSemester %}selected{% endif %}>Tout</option>
-                        {% for semester in semesters %}
-                            <option value="{{ semester.name }}" {% if selectedSemester == semester.name %}selected{% endif %}>{{ semester.name }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <button type="submit" class="btn btn-outline-secondary">Filtrer par semestre</button>
-
-                </div>
-                <!--
-                <div class="form-check">
-                    <input type="checkbox" class="custom-control-input" id="showOnlyWithWishes" name="show_only_with_wishes" {% if app.request.query.get('show_only_with_wishes') %}checked{% endif %}>
-                    <label class="custom-control-label" for="showOnlyWithWishes">Avec vœux</label>
-                </div>
-                -->
-            </form>
-        </div>
-    </div>
-
-
-
+    {{ include('/subject/_partials/_filter.html.twig') }}
 
     </br>
 
-    <div class="row justify-content-center">
-        {% for subject in pagination %}
-            <div class="col-md-4 mb-4">
-                <div class="card mx-auto">
-                    <div class="card-body">
-                        <h2 class="card-title">{{ subject.subjectCode.code}}
-                            {% set wishSubjectIds = wishes|map(wish => wish.subjectId.id) %}
-                            {% if subject.id in wishSubjectIds %}
-                                <span class="badge bg-success font-weight-normal" style="font-size: 1rem;">Avec vœux</span>
-                            {% else %}
-                                <span class="badge bg-danger font-weight-normal" style="font-size: 1rem;">Aucun vœu</span>
-                            {% endif %}
-                        </h2>
-                        <dl>
-                            <dd>
-                                {% if subject.name|length > 35 %}
-                                    {{ subject.name|slice(0, 35) }}(..)
-                                    <span style="display: none;">{{ subject.name }}</span>
-                                {% else %}
-                                    {{ subject.name }}
-                                {% endif %}
-                            </dd>
-                        </dl>
-                        <button type="button" class="btn btn-primary" onclick="window.location='{{ path('app_subject_wish_show', {'id': subject.id}) }}'">Voir les vœux</button>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+    {{ include('/subject/_partials/_subjects.html.twig') }}
 
-    <div class="pagination justify-content-center">
-        {{ knp_pagination_render(pagination) }}
-    </div>
+
 {% endblock %}
