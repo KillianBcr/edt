@@ -9,6 +9,7 @@ function Me() {
     const [hourlyRates, setHourlyRates] = useState([]);
     const [associatedWeeks, setAssociatedWeeks] = useState([]);
     const [showChart, setShowChart] = useState(false);
+    const [wishesDetails, setWishesDetails] = useState([]); // Declare wishesDetails state
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,32 +22,26 @@ function Me() {
                     const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
                     setUserWishes(userWishesFiltered);
 
-                    const allGroups = await fetchGroups(); // Fetch all groups
-                    const allWeeks = await fetchWeeks(); // Fetch all weeks
+                    const allGroups = await fetchGroups();
+                    const allWeeks = await fetchWeeks();
 
                     const relevantGroupData = allGroups["hydra:member"].filter(group => {
                         const groupId = extractGroupId(group["@id"]);
                         return userWishesFiltered.some(wish => extractGroupId(wish.groupeType) === groupId);
                     });
 
-                    const wishesDetails = await Promise.all(userWishesFiltered.map(async (wish) => {
+                    const details = await Promise.all(userWishesFiltered.map(async (wish) => {
                         const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
-                            // Find the relevant group data locally
                             const groupData = relevantGroupData.find(group => group["@id"] === `/api/groups/${groupId}`);
                             if (groupData) {
-                                // Find weeks details
                                 const weeksDetails = allWeeks['hydra:member']
                                     .filter(week => groupData.weeks.includes(week['@id']));
 
-                                // Sum the number of hours for each week
                                 const totalHours = weeksDetails.reduce((total, week) => total + week.numberHours, 0);
 
-                                // Multiply the total hours by chosenGroups
                                 const multipliedHours = totalHours * wish.chosenGroups;
-
-                                console.log(wish.chosenGroups, totalHours, multipliedHours);
 
                                 setHourlyRates(prevRates => [...prevRates, multipliedHours]);
                                 setAssociatedWeeks(prevWeeks => [...prevWeeks, weeksDetails]);
@@ -55,6 +50,9 @@ function Me() {
                             }
                         }
                     }));
+
+                    // Set wishesDetails state after fetching data
+                    setWishesDetails(details);
                 }
             } catch (error) {
                 console.error("Erreur lors de la récupération des données :", error);
@@ -73,27 +71,30 @@ function Me() {
 
             const labels = Array.from({ length: 52 }, (_, index) => index + 1);
 
-            const dataValues = labels.map((weekNumber) => {
-                const totalHoursForWeek = flattenWeeks
-                    .filter((week) => week.weekNumber === weekNumber)
-                    .reduce((total, week) => total + week.numberHours, 0);
+            // Create a data structure to store total hours for each subject (matière)
+            const subjectsData = {};
 
-                console.log(`Week ${weekNumber}: Total Hours - ${totalHoursForWeek}`);
+            wishesDetails.forEach(({ wish, groupData, weeksDetails }) => {
+                const chosenGroups = wish.chosenGroups;
 
-                return totalHoursForWeek;
+                weeksDetails.forEach((week) => {
+                    const subjectId = week.subjectId;
+
+                    if (!subjectsData[subjectId]) {
+                        subjectsData[subjectId] = {
+                            label: `Subject ${subjectId}`,
+                            data: Array(52).fill(0), // Initialize data array for each subject
+                        };
+                    }
+
+                    subjectsData[subjectId].data[week.weekNumber - 1] += week.numberHours * chosenGroups;
+                });
             });
 
-
+            // Convert subjectsData into Chart.js format
             const data = {
                 labels: labels,
-                datasets: [{
-                    label: 'My First Dataset',
-                    data: dataValues,
-                    fill: false,
-                    borderColor: 'rgb(0, 200, 255)',
-                    backgroundColor: 'rgb(0, 200, 255)',
-                    tension: 0.1
-                }]
+                datasets: Object.values(subjectsData),
             };
 
             const config = {
@@ -105,8 +106,8 @@ function Me() {
                             type: 'linear',
                             position: 'bottom',
                             ticks: {
-                                stepSize: 1
-                            }
+                                stepSize: 1,
+                            },
                         },
                     },
                 },
@@ -115,6 +116,7 @@ function Me() {
             if (myChart) {
                 myChart.destroy();
             }
+
             myChart = new Chart('myChart', config);
         }
 
@@ -123,7 +125,7 @@ function Me() {
                 myChart.destroy();
             }
         };
-    }, [showChart, associatedWeeks]);
+    }, [showChart, associatedWeeks, wishesDetails]);
 
     function extractGroupId(groupType) {
         const matches = groupType.match(/\/api\/groups\/(\d+)/);
