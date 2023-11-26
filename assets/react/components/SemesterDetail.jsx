@@ -124,6 +124,26 @@ function Semester() {
         }
     };
 
+    async function fetchSubjectCodeDetails(subjectCodeUrl) {
+        const response = await fetch(subjectCodeUrl);
+        return await response.json();
+    }
+
+    useEffect(() => {
+        if (semester) {
+            Promise.all(semester.subjects.map(async (subject) => {
+                const subjectCodeData = await fetchSubjectCodeDetails(subject.subjectCode);
+                const subjectCode = subjectCodeData.code;
+                return { ...subject, subjectCode };
+            })).then(updatedSubjects => {
+                setSemester(prevSemester => ({
+                    ...prevSemester,
+                    subjects: updatedSubjects
+                }));
+            });
+        }
+    }, [semester]);
+
     return (
         <div>
             {semester === null ? 'Loading...' : (
