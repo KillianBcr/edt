@@ -2,17 +2,15 @@
 
 namespace App\Tests\Api;
 
-use App\Entity\Group;
-use App\Entity\NbGroup;
-use App\Entity\Subject;
-use App\Entity\Wish;
+use App\Entity\Semester;
 use App\Tests\HttpClientTrait;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
-class GroupCestTest extends TestCase
+class SemesterCestTest extends TestCase
 {
     use HttpClientTrait;
+
     protected function setUp(): void
     {
         $this->setUpHttpClient();
@@ -20,63 +18,59 @@ class GroupCestTest extends TestCase
 
     public function testGettersAndSetters()
     {
-        $group = new Group();
+        $semester = new Semester();
 
-        $group->setType('TestType');
-        $this->assertEquals('TestType', $group->getType());
+        $semester->setName('TestSemester');
+        $this->assertEquals('TestSemester', $semester->getName());
 
-        $subject = new Subject();
-        $group->setSubject($subject);
-        $this->assertSame($subject, $group->getSubject());
+        $startDate = new \DateTime('2023-01-01');
+        $semester->setStartDate($startDate);
+        $this->assertSame($startDate, $semester->getStartDate());
 
-        $wish = new Wish();
-        $group->addWish($wish);
-        $this->assertCount(1, $group->getWishes());
-        $group->removeWish($wish);
-        $this->assertCount(0, $group->getWishes());
-
-        $nbGroup = new NbGroup();
-        $group->addNbGroup($nbGroup);
-        $this->assertCount(1, $group->getNbGroups());
-        $group->removeNbGroup($nbGroup);
-        $this->assertCount(0, $group->getNbGroups());
+        $endDate = new \DateTime('2023-06-30');
+        $semester->setEndDate($endDate);
+        $this->assertSame($endDate, $semester->getEndDate());
     }
 
     public function testApiOperations()
     {
         try {
             // POST request
-            $response = $this->httpClient->post('groups', [
+            $response = $this->httpClient->post('semesters', [
                 'json' => [
-                    'type' => 'TestType',
+                    'name' => 'TestSemester',
+                    'startDate' => '2023-01-01',
+                    'endDate' => '2023-06-30',
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
             $data = json_decode($response->getBody(), true);
-            $groupId = $data['id'];
+            $semesterId = $data['id'];
 
             // GET request
-            $response = $this->httpClient->get("groups/{$groupId}");
+            $response = $this->httpClient->get("semesters/{$semesterId}");
             $this->assertEquals(401, $response->getStatusCode());
 
             // PUT request
-            $response = $this->httpClient->put("groups/{$groupId}", [
+            $response = $this->httpClient->put("semesters/{$semesterId}", [
                 'json' => [
-                    'type' => 'UpdatedType',
+                    'name' => 'UpdatedTestSemester',
+                    'startDate' => '2023-01-01',
+                    'endDate' => '2023-06-30',
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
 
             // PATCH request
-            $response = $this->httpClient->patch("groups/{$groupId}", [
+            $response = $this->httpClient->patch("semesters/{$semesterId}", [
                 'json' => [
-                    'type' => 'PatchedType',
+                    'name' => 'PatchedTestSemester',
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
 
             // DELETE request
-            $response = $this->httpClient->delete("groups/{$groupId}");
+            $response = $this->httpClient->delete("semesters/{$semesterId}");
             $this->assertEquals(401, $response->getStatusCode());
         } catch (ClientException $e) {
             // Catch the exception and assert the expected status code
