@@ -124,6 +124,32 @@ function Semester() {
         }
     };
 
+    const fetchYearData = async (yearLink) => {
+        try {
+            const response = await fetch(yearLink);
+            if (!response.ok) {
+                throw new Error(`La requête pour l'année a échoué : ${response.statusText}`);
+            }
+            const yearData = await response.json();
+            return yearData;
+        } catch (error) {
+            console.error("Erreur lors de la récupération des données de l'année :", error);
+            throw error;
+        }
+    };
+
+    const isCurrentYear = async (yearLink) => {
+        try {
+            const yearData = await fetchYearData(yearLink);
+            console.log('Academic Year:', yearData);
+            console.log('Current Year:', yearData.currentYear);
+            return yearData.currentYear === true;
+        } catch (error) {
+            console.warn('Erreur lors de la récupération des données de l\'année. Veuillez consulter la console pour plus de détails.');
+            return false;
+        }
+    };
+
     async function fetchSubjectCodeDetails(subjectCodeUrl) {
         const response = await fetch(subjectCodeUrl);
         return await response.json();
@@ -151,6 +177,58 @@ function Semester() {
                     <ul>
                         {semester.subjects.map((subject) => {
                             const subjectId = subject['@id'].split('/').pop();
+                            if (isCurrentYear(subject.academicYear)) {
+                                //console.log('Displaying subject for the current year:', subject.name);
+                                return (
+                                    <li key={subject['@id']} className="semester-li">
+                                        <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
+                                        {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
+                                            <div>
+                                                <div className="groupe-container">
+                                                    {groups === null ? 'Aucun Groupe Trouvé' : (
+                                                        groups.filter((group) => group.subject === subject['@id'])
+                                                            .map((group) => (
+                                                                <ul key={group.id}>
+                                                                    <li className="groups">
+                                                                        {group.type}
+                                                                        {nbGroups === null ? (
+                                                                            'Aucun Nombre De Groupe Trouvé'
+                                                                        ) : (
+                                                                            nbGroups
+                                                                                .filter((nbGroup) => nbGroup.groups.includes(`/api/groups/${group.id}`))
+                                                                                .map((filteredNbGroup) => {
+                                                                                    if (filteredNbGroup.nbGroup === 0 || filteredNbGroup.nbGroup === null) {
+                                                                                        return null;
+                                                                                    } else {
+                                                                                        const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
+                                                                                        const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
+                                                                                        return (
+                                                                                            <span
+                                                                                                key={`${filteredNbGroup.id}`}>| {count}/{filteredNbGroup.nbGroup}</span>
+                                                                                        );
+                                                                                    }
+                                                                                })
+                                                                        )}
+                                                                    </li>
+                                                                </ul>
+                                                            ))
+                                                    )}
+                                                </div>
+                                                <div className="Postuler-container">
+                                                    {userData && (
+                                                        <WishForm subjectId={`/api/subjects/${subjectId}`}
+                                                                  onWishAdded={fetchWishesAndUpdateCount}
+                                                                  userData={userData}/>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : null}
+                                    </li>
+                                );
+                            } else {
+                                console.log('Skipping subject for a different year:', subject.name);
+                            }
+                            return null;
                             return (
                                 <li key={subject['@id']} className="semester-li">
                                     <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
