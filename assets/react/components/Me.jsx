@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {getMe, getLoggedInUserWishes, fetchWeeks, fetchGroups} from '../services/api';
+import { getMe, getLoggedInUserWishes, fetchWeeks, fetchGroups } from '../services/api';
 import { Chart } from 'chart.js/auto';
 import "../../styles/me.css";
 
@@ -9,7 +9,8 @@ function Me() {
     const [hourlyRates, setHourlyRates] = useState([]);
     const [associatedWeeks, setAssociatedWeeks] = useState([]);
     const [showChart, setShowChart] = useState(false);
-    const [wishesDetails, setWishesDetails] = useState([]); // Declare wishesDetails state
+    const [wishesDetails, setWishesDetails] = useState([]);
+    const [userWishesFiltered, setUserWishesFiltered] = useState([]); // Déclarez userWishesFiltered en dehors de fetchData
 
     useEffect(() => {
         const fetchData = async () => {
@@ -19,18 +20,19 @@ function Me() {
 
                 if (userData && userData.id) {
                     const wishes = await getLoggedInUserWishes(userData.id);
-                    const userWishesFiltered = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
-                    setUserWishes(userWishesFiltered);
+                    const filteredWishes = wishes["hydra:member"].filter(wish => wish.wishUser === `/api/users/${userData.id}`);
+                    setUserWishesFiltered(filteredWishes);  // Mettez à jour userWishesFiltered ici
+                    setUserWishes(filteredWishes);
 
                     const allGroups = await fetchGroups();
                     const allWeeks = await fetchWeeks();
 
                     const relevantGroupData = allGroups["hydra:member"].filter(group => {
                         const groupId = extractGroupId(group["@id"]);
-                        return userWishesFiltered.some(wish => extractGroupId(wish.groupeType) === groupId);
+                        return filteredWishes.some(wish => extractGroupId(wish.groupeType) === groupId);
                     });
 
-                    const details = await Promise.all(userWishesFiltered.map(async (wish) => {
+                    const details = await Promise.all(filteredWishes.map(async (wish) => {
                         const groupId = extractGroupId(wish.groupeType);
 
                         if (groupId) {
@@ -40,7 +42,6 @@ function Me() {
                                     .filter(week => groupData.weeks.includes(week['@id']));
 
                                 const totalHours = weeksDetails.reduce((total, week) => total + week.numberHours, 0);
-
                                 const multipliedHours = totalHours * wish.chosenGroups;
 
                                 setHourlyRates(prevRates => [...prevRates, multipliedHours]);
@@ -62,7 +63,6 @@ function Me() {
         fetchData();
     }, []);
 
-
     useEffect(() => {
         let myChart;
 
@@ -71,7 +71,6 @@ function Me() {
 
             const labels = Array.from({ length: 52 }, (_, index) => index + 1);
 
-            // Create a data structure to store total hours for each subject (matière)
             const subjectsData = {};
 
             wishesDetails.forEach(({ wish, groupData, weeksDetails }) => {
@@ -141,12 +140,14 @@ function Me() {
             {user && (
                 <div className="meContainer">
                     <div>
-                        <p>Total : {user.minHours}</p>
                         <p>Min / Max : {user.minHours} / {user.maxHours}</p>
-                        <button onClick={handleShowChart}>
-                            {showChart ? 'Cacher le graphique' : 'Afficher le graphique'}
-                        </button>
-                        {showChart && <canvas id="myChart" width="400" height="400"></canvas>}
+
+                        {userWishesFiltered.length > 0 && (
+                            <button onClick={handleShowChart}>
+                                {showChart ? 'Cacher le graphique' : 'Afficher le graphique'}
+                            </button>
+                        )}
+                        {showChart && userWishesFiltered.length > 0 && <canvas id="myChart" width="400" height="400"></canvas>}
                     </div>
                 </div>
             )}
