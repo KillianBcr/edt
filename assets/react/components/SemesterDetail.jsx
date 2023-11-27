@@ -86,8 +86,6 @@ function Semester({ selectedTags }) {
                         return tagUrl;
                     });
 
-                    // S(il 'ny pas le tag
-
                     return subject;
                 });
 

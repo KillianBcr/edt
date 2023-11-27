@@ -58,9 +58,11 @@ function TagForm({ changeSelectedTag }) {
                 return [...prevSelectedTags, tag];
             }
         });
-
-        changeSelectedTag([...selectedTags, tag]);
     }
+
+    useEffect(() => {
+        changeSelectedTag(selectedTags);
+    }, [selectedTags]);
 
     return (
         <Box>
