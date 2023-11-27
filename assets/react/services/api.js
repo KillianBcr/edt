@@ -69,7 +69,7 @@ export function fetchNbGroup() {
     );
 }
 
-export function getSubjectGroup(id) {
+export async function getSubjectGroup(id) {
     const isFullUrl = id.startsWith(BASE_URL + '/groups/');
     const url = isFullUrl ? id : `${BASE_URL}/groups/${id}`;
     return fetch(url).then((response) =>
@@ -191,4 +191,26 @@ export const getGroupName = async (groupId) => {
     }
 };
 
+
+
+export function getSubjectCode(id) {
+    const isFullUrl = id.startsWith(BASE_URL + '/subject_codes/');
+    const url = isFullUrl ? id : `${BASE_URL}/subject_codes/${id}`;
+
+    return fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch subject code: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then((subjectCodeData) => {
+            // Suppose que le code du sujet est dans la propriété "code"
+            return subjectCodeData && subjectCodeData.code;
+        })
+        .catch((error) => {
+            console.error('An error occurred while fetching subject code:', error);
+            return null; // Vous pouvez ajuster cela en fonction de la logique d'erreur souhaitée
+        });
+}
 
