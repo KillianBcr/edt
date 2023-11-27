@@ -35,13 +35,12 @@ function WishForm({ subjectId, onWishAdded, userData }) {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // Utilise groupeType directement, pas besoin de chercher dans allGroups
         const formData = {
             chosenGroups,
             subjectId,
             groupeType: `/api/groups/${groupeType}`,
             wishUser: `/api/users/${userData.id}`,
-            isAccepted: true, // Ajoute cela si nécessaire
+
         };
 
         console.log("formData",formData)
@@ -69,7 +68,6 @@ function WishForm({ subjectId, onWishAdded, userData }) {
                     theme: 'colored',
                 });
 
-                // Appeler la fonction de rappel lors de l'ajout réussi du vœu
                 if (onWishAdded) {
                     onWishAdded();
                 }
