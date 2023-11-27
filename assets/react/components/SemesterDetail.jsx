@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSemester, fetchNbGroup, fetchGroups, getMe } from '../services/api';
+import { getSemester, fetchNbGroup, fetchGroups, getMe, getSubjectCode } from '../services/api';
 import { useRoute } from 'wouter';
 import WishForm from './WishForm';
 import "../../styles/semesterDetail.css";
@@ -11,6 +11,7 @@ function Semester() {
     const [groups, setGroups] = useState([]);
     const [nbGroups, setNbGroups] = useState([]);
     const [wishesBySubject, setWishesBySubject] = useState({});
+    const [subjectCodes, setSubjectCodes] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -53,8 +54,6 @@ function Semester() {
             }
 
             const allWishes = await allWishesResponse.json();
-            //console.log('All Wishes:', allWishes);
-
             const wishesBySubjectData = {};
 
             if (Array.isArray(allWishes['hydra:member'])) {
@@ -69,8 +68,7 @@ function Semester() {
                     }
                 }
 
-                //console.log('Wishes Count by Group:', wishesBySubjectData);
-                setWishesBySubject(wishesBySubjectData); // Mise à jour de l'état avec les valeurs cumulées
+                setWishesBySubject(wishesBySubjectData);
             } else {
                 console.error("hydra:member n'est pas un tableau :", allWishes['hydra:member']);
             }
@@ -82,8 +80,7 @@ function Semester() {
     useEffect(() => {
         if (semester !== null) {
             getWishesCountBySubject()
-                .then(() => {
-                })
+                .then(() => {})
                 .catch(error => {
                     console.error("Une erreur s'est produite :", error);
                 });
@@ -98,8 +95,6 @@ function Semester() {
             }
 
             const allWishes = await allWishesResponse.json();
-            //console.log('All Wishes:', allWishes);
-
             const wishesBySubjectData = {};
 
             if (Array.isArray(allWishes['hydra:member'])) {
@@ -114,8 +109,7 @@ function Semester() {
                     }
                 }
 
-                //console.log('Wishes Count by Group:', wishesBySubjectData);
-                setWishesBySubject(wishesBySubjectData); // Mise à jour de l'état avec les valeurs cumulées
+                setWishesBySubject(wishesBySubjectData);
             } else {
                 console.error("hydra:member n'est pas un tableau :", allWishes['hydra:member']);
             }
@@ -141,18 +135,33 @@ function Semester() {
     const isCurrentYear = async (yearLink) => {
         try {
             const yearData = await fetchYearData(yearLink);
-            console.log('Academic Year:', yearData);
-            console.log('Current Year:', yearData.currentYear);
             return yearData.currentYear === true;
         } catch (error) {
-            console.warn('Erreur lors de la récupération des données de l\'année. Veuillez consulter la console pour plus de détails.');
+            console.warn("Erreur lors de la récupération des données de l'année :", error);
             return false;
         }
     };
 
-    async function fetchSubjectCodeDetails(subjectCodeUrl) {
-        const response = await fetch(subjectCodeUrl);
-        return await response.json();
+    async function fetchSubjectCodes() {
+        try {
+            const response = await fetch('/api/subject_codes');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch subject codes: ${response.statusText}`);
+            }
+
+            const subjectCodesData = await response.json();
+            console.log('Subject Codes:', subjectCodesData);
+
+            if (Array.isArray(subjectCodesData['hydra:member'])) {
+                return subjectCodesData['hydra:member'];
+            } else {
+                console.error("Data from API is not an array:", subjectCodesData);
+                return [];
+            }
+        } catch (error) {
+            console.error("An error occurred while fetching subject codes:", error);
+            return [];
+        }
     }
 
     useEffect(() => {
@@ -177,11 +186,14 @@ function Semester() {
                     <ul>
                         {semester.subjects.map((subject) => {
                             const subjectId = subject['@id'].split('/').pop();
+                            const resolvedSubjectCodeId = subject.subjectCode.code;
+
+
                             if (isCurrentYear(subject.academicYear)) {
-                                //console.log('Displaying subject for the current year:', subject.name);
+                                console.log('Displaying subject for the current year:', subject.name);
                                 return (
                                     <li key={subject['@id']} className="semester-li">
-                                        <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
+                                        <h2 className={"subjectName"}>{resolvedSubjectCodeId + ' - ' + subject.name}</h2>
                                         {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
                                             <div>
                                                 <div className="groupe-container">
@@ -229,69 +241,6 @@ function Semester() {
                                 console.log('Skipping subject for a different year:', subject.name);
                             }
                             return null;
-                            return (
-                                <li key={subject['@id']} className="semester-li">
-                                    <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
-                                    {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
-                                        <div>
-                                            <div className="groupe-container">
-                                                {groups === null ? 'No Groups Found' : (
-                                                    groups.filter((group) => group.subject === subject['@id'])
-                                                        .map((group) => (
-                                                            <ul key={group.id}>
-                                                                <li className="groups">
-                                                                    {nbGroups === null ? (
-                                                                        'No Group Numbers Found'
-                                                                    ) : (
-                                                                        nbGroups
-                                                                            .filter((nbGroup) => nbGroup.groups.includes(`/api/groups/${group.id}`))
-                                                                            .map((filteredNbGroup) => {
-                                                                                if (filteredNbGroup.nbGroup === 0 || filteredNbGroup.nbGroup === null) {
-                                                                                    return null;
-                                                                                } else {
-                                                                                    const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
-                                                                                    const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
-                                                                                    var color = "black";
-                                                                                    var picto = "";
-                                                                                    if (count > filteredNbGroup.nbGroup){
-                                                                                        color = "red";
-                                                                                        picto = "🔴";
-                                                                                    } else if (count < filteredNbGroup.nbGroup){
-                                                                                        color = "orange";
-                                                                                        picto = "🟠";
-                                                                                    } else {
-                                                                                        color = "green"
-                                                                                        picto = "🟢";
-                                                                                    }
-                                                                                    return (
-                                                                                        <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup} {picto}</span>
-                                                                                    );
-                                                                                }
-                                                                            })
-                                                                    )}
-                                                                </li>
-                                                            </ul>
-                                                        ))
-                                                )}
-                                            </div>
-                                            <div className="Postuler-container">
-                                                {userData && (
-                                                    <WishForm
-                                                        subjectId={`/api/subjects/${subjectId}`}
-                                                        onWishAdded={() => {
-                                                            // Refresh wishes count by subject after a new wish is added
-                                                            getWishesCountBySubject();
-                                                        }}
-                                                        userData={userData}
-                                                        groups={groups}
-                                                        wishesBySubject={wishesBySubject}
-                                                    />
-                                                )}
-                                            </div>
-                                        </div>
-                                    ) : null}
-                                </li>
-                            );
                         })}
                     </ul>
                 </div>

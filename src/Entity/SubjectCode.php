@@ -47,7 +47,7 @@ class SubjectCode
     private ?int $id = null;
 
     #[ORM\Column(length: 60)]
-    #[Groups(['get_SubjectCode','get_Subject'])]
+    #[Groups(['get_SubjectCode','get_Subject', 'get_Semester'])]
     private ?string $code = null;
 
     #[ORM\OneToMany(mappedBy: 'subjectCode', targetEntity: Subject::class)]
