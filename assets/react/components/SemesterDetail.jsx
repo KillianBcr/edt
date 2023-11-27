@@ -6,6 +6,7 @@ import "../../styles/semesterDetail.css";
 
 function Semester({ selectedTags }) {
     const [semester, setSemester] = useState(null);
+    const [subjects, setSubjects] = useState(null);
     const [, params] = useRoute('/react/semesters/:id');
     const [userData, setUserData] = useState(null);
     const [groups, setGroups] = useState([]);
@@ -188,7 +189,14 @@ function Semester({ selectedTags }) {
             {semester === null || subjects === null ? 'Loading...' : (
                 <div className={"subjectList"}>
                     <ul>
-                        {subjects.map((subject) => {
+                        {subjects
+                            .filter((subject) => {
+                                if (selectedTags.length === 0) {
+                                    return true;
+                                }
+                                return selectedTags.some((selectedTag) => subject.tags.some(subjectTag => selectedTag.id === subjectTag.id))
+                            })
+                            .map((subject) => {
                             const subjectId = subject['@id'].split('/').pop();
                             const subjectCodeId = subject.subjectCode.code;
                             const currentYear = subject.academicYear.currentYear;
@@ -202,7 +210,7 @@ function Semester({ selectedTags }) {
                                         {subject.tags && subject.tags.length > 0 && (
                                             <div className="tag-container">
                                                 {subject.tags.map((tag, index) => (
-                                                    <span key={index} className="tag">{tag.name}</span>
+                                                    <span key={index} className="tag">{tag.name}</span> // Affichage des tags
                                                 ))}
                                             </div>
                                         )}
