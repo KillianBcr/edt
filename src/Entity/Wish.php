@@ -59,9 +59,9 @@ class Wish
     #[ORM\ManyToOne(inversedBy: 'wish')]
     private ?User $wishUser = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     #[Groups(['get_Wish', 'set_Wish'])]
-    private ?bool $isAccepted = false;
+    private ?bool $isAccepted = null;
 
     public function getId(): ?int
     {

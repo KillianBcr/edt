@@ -113,7 +113,7 @@ function Repartition() {
     console.log(wishes);
     return (
         <div className="table-container">
-            <h2 className={"repartition"}> de vos heures</h2>
+            <h2 className={"repartition"}>Répartition de vos heures</h2>
             <table>
                 <thead>
                 <tr>
@@ -130,17 +130,20 @@ function Repartition() {
                         <td>{wish.subjectName}</td>
                         <td>{wish.chosenGroups} groupes de {wish.groupName} </td>
                         <td>
-                            {wish.isAccepted ? (
+                            {wish.isAccepted === true ? (
                                 <span className="badge bg-success font-weight-normal" style={{ fontSize: '1rem' }}>
                                     Accepté
                                 </span>
-                            ) : (
+                            ) : wish.isAccepted === false ? (
                                 <span className="badge bg-danger font-weight-normal" style={{ fontSize: '1rem' }}>
                                     Refusé
                                 </span>
+                            ) : (
+                                <span className="badge bg-warning font-weight-normal" style={{ fontSize: '1rem' }}>
+                                    En attente
+                                </span>
                             )}
                         </td>
-
                         <td>
                             <button className="btn btn-primary" onClick={() => handleOpen(wish.id)}>Modifier</button>
                             <button className="btn btn-danger" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
