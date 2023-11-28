@@ -8,7 +8,9 @@ import {
     updateWish,
     fetchWishesForUser,
     getSubjectName,
-    getGroupName
+    getGroupName,
+    getSubjectYear,
+    getCurrentYear
 } from "../services/api";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -58,6 +60,7 @@ function Repartition() {
     const currentWishes = wishes.slice(indexOfFirstWish, indexOfLastWish);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
 
     const handleOpen = (wishId) => {
         setSelectedWishId(wishId);
