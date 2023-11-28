@@ -215,8 +215,8 @@ function Repartition() {
                                     )}
                                 </td>
                                 <td>
-                                    <button className="btn btn-primary" onClick={() => handleOpen(wish.id)}>Modifier</button>
-                                    <button className="btn btn-danger" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
+                                    <button id="repartition_btn" className="btn btn-primary" onClick={() => handleOpen(wish.id)}>Modifier</button>
+                                    <button id="repartition_btn" className="btn btn-danger" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
                                 </td>
                             </tr>
                         ))}
