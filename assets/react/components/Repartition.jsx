@@ -142,6 +142,16 @@ function Repartition() {
         }
     };
 
+    function truncateSubjectName(subjectName) {
+        const maxLength = 40;
+        if (subjectName.length <= maxLength) {
+            return subjectName;
+        } else {
+            return subjectName.substring(0, maxLength) + "...";
+        }
+    }
+
+
     return (
         <div className="table-container">
             <h2 className={"repartition"}>Répartition de vos heures</h2>
@@ -156,17 +166,11 @@ function Repartition() {
                 </thead>
                 <tbody>
                 {wishes.length === 0 ? (
-                    <div>
-                        <table>
-                            <tbody>
                             <tr>
                                 <td colSpan="4">
                                     <Link to="/react/semesters/1" className="btn btn-primary">Ajouter des heures</Link>
                                 </td>
                             </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 ) : (
                     <>
                         {currentWishes.map(wish => (
@@ -176,8 +180,14 @@ function Repartition() {
                                         wish.subjectName
                                     ) : (
                                         <React.Suspense fallback="Chargement...">
-                                            <SubjectLoader subjectId={wish.subjectId} onSubjectLoad={(subjectName) => handleSubjectLoad(wish.subjectId, subjectName)} />
+                                            <SubjectLoader
+                                                subjectId={wish.subjectId}
+                                                onSubjectLoad={(subjectName) =>
+                                                    handleSubjectLoad(wish.subjectId, truncateSubjectName(subjectName))
+                                                }
+                                            />
                                         </React.Suspense>
+
                                     )}
                                 </td>
                                 <td>
