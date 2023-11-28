@@ -156,5 +156,35 @@ export function fetchWeeks() {
     );
 }
 
+export const fetchWishesForUser = async (userId) => {
+    try {
+        const response = await fetch(`${BASE_URL}/wishes?userId=${userId}`, { credentials: "include" });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error in fetchWishesForUser:', error);
+        throw error;
+    }
+};
+
+export const getSubjectName = async (subjectId) => {
+    try {
+        const response = await getSubject(subjectId);
+        return response ? response.name : null;
+    } catch (error) {
+        console.error('Error in getSubjectName:', error);
+        throw error;
+    }
+};
+
+export const getGroupName = async (groupId) => {
+    try {
+        const response = await getSubjectGroup(groupId);
+        return response ? response.type : null;
+    } catch (error) {
+        console.error('Error in getGroupName:', error);
+        throw error;
+    }
+};
 
 
