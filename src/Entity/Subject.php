@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\Controller\AddTagToSubjectController;
 use App\Repository\SubjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -38,7 +39,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Patch(
             normalizationContext: ['groups' => ['get_Subject']],
             denormalizationContext: ['groups' => ['set_Subject']],
-            security: "is_granted('ROLE_ADMIN')"
+            security: "is_granted('ROLE_ADMIN')",
+        ),
+        new Patch(
+            uriTemplate: 'subject/addTag/{id}',
+            inputFormats: [
+                'jsonld' => ['application/merge-patch+json'],
+            ],
+            controller: AddTagToSubjectController::class,
+            normalizationContext: ['groups' => ['getSubjectTag']],
+            denormalizationContext: ['groups' => ['setSubjectTag']],
+            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_ENSEIGNANT')",
         ),
     ]
 )]
