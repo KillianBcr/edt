@@ -118,29 +118,20 @@ function Semester() {
         }
     };
 
-    const fetchYearData = async (yearLink) => {
+    async function fetchYearForSubject(subjectId) {
         try {
-            const response = await fetch(yearLink);
+            const response = await fetch(`/api/subjects/${subjectId}/academic_year`);
             if (!response.ok) {
-                throw new Error(`La requête pour l'année a échoué : ${response.statusText}`);
+                throw new Error(`Failed to fetch year for subject: ${response.statusText}`);
             }
+
             const yearData = await response.json();
             return yearData;
         } catch (error) {
-            console.error("Erreur lors de la récupération des données de l'année :", error);
-            throw error;
+            console.error("An error occurred while fetching year for subject:", error);
+            return null;
         }
-    };
-
-    const isCurrentYear = async (yearLink) => {
-        try {
-            const yearData = await fetchYearData(yearLink);
-            return yearData.currentYear === true;
-        } catch (error) {
-            console.warn("Erreur lors de la récupération des données de l'année :", error);
-            return false;
-        }
-    };
+    }
 
     async function fetchSubjectCodes() {
         try {
@@ -186,11 +177,12 @@ function Semester() {
                     <ul>
                         {semester.subjects.map((subject) => {
                             const subjectId = subject['@id'].split('/').pop();
-                            const resolvedSubjectCodeId = subject.subjectCode.code;
+                            const subjectCodeId =  subject.subjectCode.code;
+                            const currentYear = subject.academicYear.currentYear;
 
+                            const resolvedSubjectCodeId = subjectCodeId;
 
-                            if (isCurrentYear(subject.academicYear)) {
-                                console.log('Displaying subject for the current year:', subject.name);
+                            if (currentYear === true || currentYear === 1) {
                                 return (
                                     <li key={subject['@id']} className="semester-li">
                                         <h2 className={"subjectName"}>{resolvedSubjectCodeId + ' - ' + subject.name}</h2>
@@ -238,9 +230,8 @@ function Semester() {
                                     </li>
                                 );
                             } else {
-                                console.log('Skipping subject for a different year:', subject.name);
+                                return null
                             }
-                            return null;
                         })}
                     </ul>
                 </div>

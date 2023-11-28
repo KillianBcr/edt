@@ -67,6 +67,7 @@ class Year
     private Collection $subjects;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['get_Year', 'get_Semester'])]
     private ?bool $currentYear = null;
 
     public function __construct()
