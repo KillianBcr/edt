@@ -368,3 +368,43 @@ export function fetchTags() {
         response.ok ? response.json() : Promise.resolve(null),
     );
 }
+
+export async function addTagToSubject(tagId, semesterId) {
+    try {
+        const response = await fetch(`${BASE_URL}/add-tag-to-subject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tagId: tagId,
+                semesterId: semesterId,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to add tag to subject.');
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        throw new Error(`Error adding tag to subject: ${error.message}`);
+    }
+}
+
+export async function fetchSubjectsForSemester(semestersId) {
+    try {
+        const response = await fetch(`${BASE_URL}/semesters/${semestersId}`);
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des matières pour le semestre.');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des matières pour le semestre :', error);
+        throw error;
+    }
+}

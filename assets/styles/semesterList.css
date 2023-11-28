@@ -41,6 +41,8 @@
 
 .tagsButton {
     margin-left: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .tagsButton button {
@@ -133,6 +135,7 @@ form input, form select{
     margin-left: 1%;
     width: 100px;
 }
+
 
 @media screen and (max-width: 800px) {
     html{
