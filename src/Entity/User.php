@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Controller\GetMeController;
 use App\Repository\UserRepository;
@@ -44,6 +45,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: ("is_granted('ROLE_ENSEIGNANT') or is_granted('ROLE_ADMIN')")
         ),
         new Put(
+            denormalizationContext: ['groups' => ['set_User']],
+            security: "is_granted('ROLE_ENSEIGNANT')"
+        ),
+        new Post(
             denormalizationContext: ['groups' => ['set_User']],
             security: "is_granted('ROLE_ENSEIGNANT')"
         ),
