@@ -215,17 +215,14 @@ export function getSubjectCode(id) {
 }
 
 
-export function getSubjectYear(id) {
-    return fetch(`${BASE_URL}/subjects/${id}`).then((response) =>
-        response.ok ? response.json() : Promise.resolve(null),
-    );
-}
+export const getSubjectYear = async (subjectId) => {
+    try {
+        const response = await getSubject(subjectId);
+        return response ? response.academicYear.currentYear : null;
+    } catch (error) {
+        console.error('Error in getSubjectName:', error);
+        throw error;
+    }
+};
 
 
-export function getCurrentYear(id) {
-    const isFullUrl = id.startsWith(BASE_URL + '/years/');
-    const url = isFullUrl ? id : `${BASE_URL}/years/${id}`;
-    return fetch(url).then((response) =>
-        response.ok ? response.json() : Promise.resolve(null),
-    );
-}
