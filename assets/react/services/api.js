@@ -215,14 +215,23 @@ export function getSubjectCode(id) {
 }
 
 
-export const getSubjectYear = async (subjectId) => {
+export const getCurrentYear = async (subjectId) => {
     try {
         const response = await getSubject(subjectId);
-        return response ? response.academicYear.currentYear : null;
+
+        const currentYear = response?.academicYear?.currentYear;
+
+        if (currentYear !== undefined && currentYear !== null) {
+            return currentYear;
+        } else {
+            console.error('Current year is not defined or null.');
+            return null;
+        }
     } catch (error) {
-        console.error('Error in getSubjectName:', error);
+        console.error('Error in getCurrentYear:', error);
         throw error;
     }
 };
+
 
 

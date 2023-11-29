@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import "../../styles/repartition.css";
 import { Link } from 'wouter';
 import {
-    fetchWishes,
     getMe,
     deleteWish,
     updateWish,
     fetchWishesForUser,
     getSubjectName,
     getGroupName,
-    getSubjectYear,
-    getCurrentYear
+    getCurrentYear,
 } from "../services/api";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -24,7 +22,6 @@ function SubjectLoader({ subjectId, onSubjectLoad }) {
     useEffect(() => {
         const loadSubject = async () => {
             const subjectName = await getSubjectName(subjectId);
-            const subjectYear = await getSubjectYear(subjectId);
             onSubjectLoad(subjectName);
         };
         loadSubject();
@@ -42,6 +39,19 @@ function GroupLoader({ groupType, onGroupLoad }) {
 
         loadGroup();
     }, [groupType, onGroupLoad]);
+
+    return null;
+}
+
+function YearLoader({ subjectId, onCurrentYearLoad }) {
+    useEffect(() => {
+        const loadYear = async () => {
+            const subjectCurrentYear = await getCurrentYear(subjectId);
+            onCurrentYearLoad(subjectCurrentYear);
+        };
+
+        loadYear();
+    }, [subjectId, onCurrentYearLoad]);
 
     return null;
 }
@@ -81,13 +91,32 @@ function Repartition() {
         setModifiedGroupName('');
     };
 
-    const handleSubjectLoad = (subjectId, subjectName,subjectYear) => {
-        setWishes((prevWishes) => prevWishes.map((wish) => (wish.subjectId === subjectId ? { ...wish, subjectName,subjectYear } : wish)));
+    const handleSubjectLoad = (subjectId, subjectName) => {
+
+        setWishes((prevWishes) =>
+            prevWishes.map((wish) =>
+                wish.subjectId === subjectId
+                    ? { ...wish, subjectName }
+                    : wish
+            )
+        );
     };
+
 
     const handleGroupLoad = (groupType, groupName) => {
         setWishes((prevWishes) => prevWishes.map((wish) => (wish.groupeType === groupType ? { ...wish, groupName } : wish)));
     };
+
+    const handleYearLoad = (subjectId, subjectCurrentYear) => {
+        setWishes((prevWishes) =>
+            prevWishes.map((wish) =>
+                wish.subjectId === subjectId
+                    ? { ...wish, currentYear: subjectCurrentYear }
+                    : wish
+            )
+        );
+    };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -99,8 +128,7 @@ function Repartition() {
 
                     const wishData = await fetchWishesForUser(currentUserID);
                     if (wishData && Array.isArray(wishData['hydra:member'])) {
-                        const filteredWishes = wishData['hydra:member'].filter(wish => wish.subjectYear === true ||  wish.subjectYear === 1);
-                        setWishes(filteredWishes);
+                        setWishes(wishData['hydra:member']);
                     }
                 }
             } catch (error) {
@@ -165,6 +193,7 @@ function Repartition() {
                 <tr>
                     <th>Cours</th>
                     <th>Groupes</th>
+                    <th>Année en cours</th>
                     <th>Etat</th>
                     <th>Modification</th>
                 </tr>
@@ -191,10 +220,17 @@ function Repartition() {
                                                     handleSubjectLoad(wish.subjectId, truncateSubjectName(subjectName))
                                                 }
                                             />
+                                            <YearLoader
+                                                subjectId={wish.subjectId}
+                                                onCurrentYearLoad={(subjectCurrentYear) =>
+                                                    handleYearLoad(wish.subjectId, subjectCurrentYear)
+                                                }
+                                            />
                                         </React.Suspense>
 
                                     )}
                                 </td>
+
                                 <td>
                                     {wish.chosenGroups} groupe(s) de {wish.groupName ? (
                                     wish.groupName
@@ -204,6 +240,31 @@ function Repartition() {
                                     </React.Suspense>
                                 )}
                                 </td>
+
+                                <td>
+                                    {wish.currentYear !== undefined ? (
+                                        wish.currentYear ? (
+                                            <span className="badge bg-success font-weight-normal" style={{ fontSize: '1rem' }}>
+                                                Oui
+                                            </span>
+                                        ) : (
+                                            <span className="badge bg-secondary font-weight-normal" style={{ fontSize: '1rem' }}>
+                                                Non
+                                            </span>
+                                        )
+                                    ) : (
+                                        <React.Suspense fallback="Chargement...">
+                                            <YearLoader
+                                                subjectId={wish.subjectId}
+                                                onCurrentYearLoad={(subjectCurrentYear) =>
+                                                    handleYearLoad(wish.subjectId, subjectCurrentYear)
+                                                }
+                                            />
+                                        </React.Suspense>
+                                    )}
+                                </td>
+
+
                                 <td>
                                     {wish.isAccepted === true ? (
                                         <span className="badge bg-success font-weight-normal" style={{ fontSize: '1rem' }}>
