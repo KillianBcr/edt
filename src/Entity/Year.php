@@ -60,14 +60,14 @@ class Year
     private ?int $endYear = null;
 
     #[ORM\Column(length: 20)]
-    #[Groups(['get_Year'])]
+    #[Groups(['get_Year', 'get_Subject'])]
     private ?string $academicYear = null;
 
     #[ORM\OneToMany(mappedBy: 'academicYear', targetEntity: Subject::class)]
     private Collection $subjects;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['get_Year', 'get_Semester'])]
+    #[Groups(['get_Year', 'get_Semester', 'get_Subject'])]
     private ?bool $currentYear = null;
 
     public function __construct()
