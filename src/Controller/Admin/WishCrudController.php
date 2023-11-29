@@ -32,7 +32,7 @@ class WishCrudController extends AbstractCrudController
 
             IntegerField::new('chosenGroups')->setLabel('Nombre de groupes choisis'),
 
-            TextField::new('groupeType', 'Type de groupe')
+            AssociationField::new('groupeType', 'Type de groupe')
                 ->formatValue(fn ($value, $entity) => $entity->getGroupeType()->getType()),
 
             AssociationField::new('subjectId')
