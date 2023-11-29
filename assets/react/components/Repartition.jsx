@@ -24,6 +24,7 @@ function SubjectLoader({ subjectId, onSubjectLoad }) {
     useEffect(() => {
         const loadSubject = async () => {
             const subjectName = await getSubjectName(subjectId);
+            const subjectYear = await getSubjectYear(subjectId);
             onSubjectLoad(subjectName);
         };
         loadSubject();
@@ -80,8 +81,8 @@ function Repartition() {
         setModifiedGroupName('');
     };
 
-    const handleSubjectLoad = (subjectId, subjectName) => {
-        setWishes((prevWishes) => prevWishes.map((wish) => (wish.subjectId === subjectId ? { ...wish, subjectName } : wish)));
+    const handleSubjectLoad = (subjectId, subjectName,subjectYear) => {
+        setWishes((prevWishes) => prevWishes.map((wish) => (wish.subjectId === subjectId ? { ...wish, subjectName,subjectYear } : wish)));
     };
 
     const handleGroupLoad = (groupType, groupName) => {
@@ -97,16 +98,17 @@ function Repartition() {
                     setUserId(currentUserID);
 
                     const wishData = await fetchWishesForUser(currentUserID);
-                    setWishes(wishData);
+                    if (wishData && Array.isArray(wishData['hydra:member'])) {
+                        const filteredWishes = wishData['hydra:member'].filter(wish => wish.subjectYear === true ||  wish.subjectYear === 1);
+                        setWishes(filteredWishes);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-
         fetchData();
     }, []);
-
 
     const handleDeleteWish = async (wishId) => {
         const confirmed = window.confirm("Voulez-vous vraiment supprimer ce vœu ?");
