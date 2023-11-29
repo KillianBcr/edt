@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Repository\SubjectRepository;
 use App\Repository\TagRepository;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class AddTagToSubjectController extends AbstractController
@@ -19,13 +19,13 @@ class AddTagToSubjectController extends AbstractController
         $this->tagRepository = $tagRepository;
     }
 
-    public function __invoke(int $id, Request $request): JsonResponse
+    public function __invoke(int $id, Request $request)
     {
-        return new JsonResponse($request);
-
         $subject = $this->subjectRepository->find($id);
-        $tag = $this->tagRepository->find($request->get('tag'));
+        $tag = $this->tagRepository->find(json_decode($request->getContent())->tag);
 
         $subject->addTag($tag);
+
+        return $subject;
     }
 }

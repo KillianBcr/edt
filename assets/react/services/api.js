@@ -369,16 +369,16 @@ export function fetchTags() {
     );
 }
 
-export async function addTagToSubject(tagId, semesterId) {
+export async function addTagToSubject(tagId, subjectId) {
     try {
-        const response = await fetch(`${BASE_URL}/add-tag-to-subject`, {
-            method: 'POST',
+        const response = await fetch(`${BASE_URL}/subject/addTag/${subjectId}`, {
+            method: 'PATCH',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/merge-patch+json',
             },
             body: JSON.stringify({
-                tagId: tagId,
-                semesterId: semesterId,
+                tag: tagId,
+                semesterId: subjectId,
             }),
         });
 

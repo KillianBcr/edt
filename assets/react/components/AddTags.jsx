@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TagForm from "./Tags";
+import SellIcon from '@mui/icons-material/Sell';
 
 export default function PopUpTags({ changeSelectedTag }) {
     const [open, setOpen] = React.useState(false);
@@ -21,7 +22,8 @@ export default function PopUpTags({ changeSelectedTag }) {
     return (
         <div>
             <Button variant="outlined" onClick={handleClickOpen}>
-                Ajouter des tags
+                <SellIcon></SellIcon>
+                Tags
             </Button>
             <Dialog
                 open={open}

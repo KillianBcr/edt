@@ -47,8 +47,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'jsonld' => ['application/merge-patch+json'],
             ],
             controller: AddTagToSubjectController::class,
-            normalizationContext: ['groups' => ['getSubjectTag']],
-            denormalizationContext: ['groups' => ['setSubjectTag']],
+            normalizationContext: ['groups' => ['get_Subject']],
+            denormalizationContext: ['groups' => ['setSubject']],
             security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_ENSEIGNANT')",
         ),
     ]

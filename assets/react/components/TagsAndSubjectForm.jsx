@@ -34,12 +34,9 @@ function TagAndSubjectForm() {
 
     const handleAddTagToSubject = () => {
         // Appeler la méthode API pour ajouter le tag sélectionné à la matière sélectionnée
-        console.log("1")
         if (selectedTag && selectedSubject) {
-            console.log("2")
             addTagToSubject(selectedTag, selectedSubject)
                 .then(() => {
-                    console.log("3")
                     // Gérer le succès, peut-être mettre à jour l'interface utilisateur ou afficher un message
                     console.log('Tag ajouté à la matière avec succès.');
                 })
@@ -65,7 +62,7 @@ function TagAndSubjectForm() {
             </div>
             <div style={{marginLeft: "10px", marginRight: "10px"}}>
                 <label htmlFor="subjectDropdown">Matière :</label>
-                <select id="subjectDropdown" onChange={handleSubjectChange} value={selectedSubject}>
+                <select id="subjectDropdown" onChange={handleSubjectChange} value={selectedSubject} style={{ maxWidth: "300px" }}>
                     <option value="">Sélectionnez une Matière</option>
                     {subjects.map((subject) => (
                         <option key={subject.id} value={subject.id}>

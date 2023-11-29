@@ -40,9 +40,6 @@ function Semester({ selectedTags }) {
     const [tagsData, setTagsData] = useState([]);
 
     useEffect(() => {
-        console.log("-------------")
-        console.log(params)
-        console.log("-------------")
         getSemester(params.id).then((data) => {
             setSemester(data);
         });
