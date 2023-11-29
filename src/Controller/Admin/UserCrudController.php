@@ -27,24 +27,34 @@ class UserCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')
-                ->hideOnForm(),
-            TextField::new('firstname'),
-            TextField::new('lastname'),
+                ->hideOnForm()
+                ->setLabel('Identifiant'),
+            TextField::new('firstname')
+                ->setLabel('Prénom'),
+            TextField::new('lastname')
+                ->setLabel('Nom de famille'),
             TextField::new('phone')
+                ->setLabel('Téléphone')
                 ->hideOnIndex(),
             TextField::new('address')
+                ->setLabel('Adresse')
                 ->hideOnIndex(),
             TextField::new('city')
+                ->setLabel('Ville')
                 ->hideOnIndex(),
             TextField::new('postalCode')
+                ->setLabel('Code postal')
                 ->hideOnIndex(),
             TextField::new('login')
+                ->setLabel('Nom d\'utilisateur')
                 ->hideOnIndex()
                 ->setFormTypeOption('disabled', 'disabled'),
             TextField::new('email')
+                ->setLabel('Adresse e-mail')
                 ->hideOnIndex()
                 ->setFormTypeOption('disabled', 'disabled'),
-            ArrayField::new('roles'),
+            ArrayField::new('roles')
+                ->setLabel('Rôles'),
         ];
     }
 }

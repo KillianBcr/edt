@@ -5,10 +5,13 @@ namespace App\Controller\Admin;
 use App\Entity\Subject;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CallbackField;
+
 
 class SubjectCrudController extends AbstractCrudController
 {
@@ -34,8 +37,14 @@ class SubjectCrudController extends AbstractCrudController
                 ->hideOnIndex(),
             DateTimeField::new('lastWeek')
                 ->hideOnIndex(),
-            TextField::new('subjectCode'),
+            AssociationField::new('subjectCode')
+                ->autocomplete()
+                ->setRequired(true)
+                ->setLabel('Code de la matière')
+                ->formatValue(fn ($value, $entity) => $entity->getSubjectCode()->getCode())
+                ->hideOnForm(),
             IntegerField::new('hoursTotal'),
         ];
     }
 }
+
