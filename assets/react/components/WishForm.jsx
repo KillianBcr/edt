@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchGroups, fetchGroupsBySubject } from '../services/api';
+import { fetchGroups, fetchGroupsBySubject, getYearIdWithCurrentYear } from '../services/api'; // Assurez-vous que la fonction est importée correctement
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -8,7 +8,7 @@ function WishForm({ subjectId, onWishAdded, userData }) {
     const [groupeType, setGroupeType] = useState('');
     const [allGroups, setAllGroups] = useState([]);
     const [groupeTypes, setGroupeTypes] = useState([]);
-
+    const [currentYearId, setCurrentYearId] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,6 +26,19 @@ function WishForm({ subjectId, onWishAdded, userData }) {
     }, [subjectId]);
 
     useEffect(() => {
+        const fetchCurrentYearId = async () => {
+            try {
+                const yearId = await getYearIdWithCurrentYear('/api/years'); // Appel de la fonction avec l'API endpoint
+                setCurrentYearId(yearId);
+            } catch (error) {
+                console.error('Erreur lors de la récupération de l\'ID de l\'année actuelle :', error);
+            }
+        };
+
+        fetchCurrentYearId();
+    }, []); // Effectué une seule fois à la création du composant
+
+    useEffect(() => {
         if (subjectId && allGroups.length > 0) {
             const filteredGroups = allGroups.filter((group) => group.subject === subjectId);
             setGroupeTypes(filteredGroups);
@@ -40,10 +53,10 @@ function WishForm({ subjectId, onWishAdded, userData }) {
             subjectId,
             groupeType: `/api/groups/${groupeType}`,
             wishUser: `/api/users/${userData.id}`,
-
+            year: `/api/years/${currentYearId}`,
         };
 
-        console.log("formData",formData)
+        console.log("formData", formData);
 
         fetch('/api/wishes', {
             method: 'POST',
@@ -82,6 +95,7 @@ function WishForm({ subjectId, onWishAdded, userData }) {
                 });
             });
     };
+
 
 
     return (

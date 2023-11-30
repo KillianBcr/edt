@@ -9,6 +9,8 @@ import {
     getSubjectName,
     getGroupName,
     getCurrentYear,
+    getCurrentYearId,
+    getCurrentWishYear, // Ajout de la nouvelle méthode
 } from "../services/api";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -64,11 +66,50 @@ function Repartition() {
     const [modifiedChosenGroups, setModifiedChosenGroups] = useState('');
     const [modifiedGroupName, setModifiedGroupName] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentYearId, setCurrentYearId] = useState(null);
     const wishesPerPage = 3;
+    const apiEndpoint = '/api';
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userData = await getMe();
+                if (userData) {
+                    const currentUserID = userData.id;
+                    setUserId(currentUserID);
+
+                    const wishData = await fetchWishesForUser(currentUserID);
+                    if (wishData && Array.isArray(wishData['hydra:member'])) {
+                        setWishes(wishData['hydra:member']);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchCurrentWishYear = async () => {
+            try {
+                const year = await getCurrentWishYear(apiEndpoint); // Utilisation de la nouvelle méthode
+                setCurrentYearId(year);
+            } catch (error) {
+                console.error('Error fetching current wish year:', error);
+            }
+        };
+
+        fetchCurrentWishYear();
+    }, []);
 
     const indexOfLastWish = currentPage * wishesPerPage;
     const indexOfFirstWish = indexOfLastWish - wishesPerPage;
     const currentWishes = wishes.slice(indexOfFirstWish, indexOfLastWish);
+
+    const currentWishesFiltered = currentWishes.filter(wish => wish.year === currentYearId);
+    const otherWishes = currentWishes.filter(wish => !currentWishesFiltered.includes(wish));
+
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -193,21 +234,20 @@ function Repartition() {
                 <tr>
                     <th>Cours</th>
                     <th>Groupes</th>
-                    <th>Année en cours</th>
                     <th>Etat</th>
                     <th>Modification</th>
                 </tr>
                 </thead>
                 <tbody>
                 {wishes.length === 0 ? (
-                            <tr>
-                                <td colSpan="4">
-                                    <Link to="/react/semesters/1" className="btn btn-primary">Ajouter des heures</Link>
-                                </td>
-                            </tr>
+                    <tr>
+                        <td colSpan="4">
+                            <Link to="/react/semesters/1" className="btn btn-primary">Ajouter des heures</Link>
+                        </td>
+                    </tr>
                 ) : (
                     <>
-                        {currentWishes.map(wish => (
+                        {otherWishes.map(wish => (
                             <tr key={wish.id}>
                                 <td>
                                     {wish.subjectName ? (
@@ -242,42 +282,18 @@ function Repartition() {
                                 </td>
 
                                 <td>
-                                    {wish.currentYear !== undefined ? (
-                                        wish.currentYear ? (
-                                            <span className="badge bg-success font-weight-normal" style={{ fontSize: '1rem' }}>
-                                                Oui
-                                            </span>
-                                        ) : (
-                                            <span className="badge bg-secondary font-weight-normal" style={{ fontSize: '1rem' }}>
-                                                Non
-                                            </span>
-                                        )
-                                    ) : (
-                                        <React.Suspense fallback="Chargement...">
-                                            <YearLoader
-                                                subjectId={wish.subjectId}
-                                                onCurrentYearLoad={(subjectCurrentYear) =>
-                                                    handleYearLoad(wish.subjectId, subjectCurrentYear)
-                                                }
-                                            />
-                                        </React.Suspense>
-                                    )}
-                                </td>
-
-
-                                <td>
                                     {wish.isAccepted === true ? (
                                         <span className="badge bg-success font-weight-normal" style={{ fontSize: '1rem' }}>
-                                        Accepté
-                                    </span>
+                                                    Accepté
+                                                </span>
                                     ) : wish.isAccepted === false ? (
                                         <span className="badge bg-danger font-weight-normal" style={{ fontSize: '1rem' }}>
-                                        Refusé
-                                    </span>
+                                                    Refusé
+                                                </span>
                                     ) : (
                                         <span className="badge bg-warning font-weight-normal" style={{ fontSize: '1rem' }}>
-                                        En attente
-                                    </span>
+                                                    En attente
+                                                </span>
                                     )}
                                 </td>
                                 <td>

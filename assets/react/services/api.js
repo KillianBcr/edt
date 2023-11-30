@@ -233,5 +233,80 @@ export const getCurrentYear = async (subjectId) => {
     }
 };
 
+export async function getYearIdWithCurrentYear(apiEndpoint) {
+    try {
+        const response = await fetch(apiEndpoint);
+        const data = await response.json();
+
+        // Find the year with currentYear equal to true
+        const yearWithCurrentYear = data['hydra:member'].find((year) => year.currentYear === true);
+
+        if (yearWithCurrentYear) {
+            console.log(yearWithCurrentYear.id);
+            return yearWithCurrentYear.id;
+        } else {
+            console.error('No year found with currentYear equal to true');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching year data:', error);
+        return null;
+    }
+}
+
+export const getCurrentYearId = async () => {
+    try {
+        const apiUrl = "/api/years";
+
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        const currentYear = data["hydra:member"].find(year => year.currentYear === true);
+
+        if (currentYear) {
+            const currentYearId = currentYear.id;
+            console.log(currentYearId)
+            return currentYearId;
+        } else {
+            console.error("Aucune année en cours n'a été trouvée.");
+            return null;
+        }
+    } catch (error) {
+        console.error('Erreur dans getCurrentYearId:', error);
+        throw error;
+    }
+};
+
+export const getCurrentWishYear = async () => {
+    try {
+        const apiUrl = "/api/wishes";
+
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        console.log("Raw data:", data); // Vérifier la structure brute des données reçues
+
+        const currentWish = data["hydra:member"].find(wish => wish.currentYear !== true);
+        console.log("Test", data["hydra:member"].find(wish => wish.year === true || wish.year === null))
+
+        console.log("Current wish:", currentWish); // Vérifier le souhait actuel
+
+        if (currentWish) {
+            const currentWishYear = currentWish.year; // Assurez-vous que le champ s'appelle correctement
+            console.log("Current wish year:", currentWishYear);
+            return currentWishYear;
+        } else {
+            console.error("Aucun souhait pour l'année en cours n'a été trouvé.");
+            return null;
+        }
+    } catch (error) {
+        console.error('Erreur dans getCurrentWishYear:', error);
+        throw error;
+    }
+};
+
+
+
+
 
 

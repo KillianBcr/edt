@@ -64,6 +64,10 @@ class Wish
     #[Groups(['get_Wish', 'set_Wish'])]
     private ?bool $isAccepted = null;
 
+    #[ORM\ManyToOne(inversedBy: 'wishes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Year $year = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -132,6 +136,18 @@ class Wish
     public function setIsAccepted(?bool $isAccepted): static
     {
         $this->isAccepted = $isAccepted;
+
+        return $this;
+    }
+
+    public function getYear(): ?Year
+    {
+        return $this->year;
+    }
+
+    public function setYear(?Year $year): static
+    {
+        $this->year = $year;
 
         return $this;
     }
