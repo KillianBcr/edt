@@ -79,11 +79,9 @@ function Repartition() {
                     setUserId(currentUserID);
 
                     const wishData = await fetchWishesForUser(currentUserID);
-                    console.log("wishData", wishData);
 
                     if (Array.isArray(wishData)) {
                         setWishes(wishData);
-                        console.log("wishData2", wishData);
                     } else {
                         console.log("Invalid or missing 'hydra:member' property in wishData");
                     }
@@ -112,13 +110,17 @@ function Repartition() {
 
     const indexOfLastWish = currentPage * wishesPerPage;
     const indexOfFirstWish = indexOfLastWish - wishesPerPage;
-    console.log("wishes",wishes)
     const currentWishes = wishes.slice(indexOfFirstWish, indexOfLastWish);
 
-    const currentWishesFiltered = currentWishes.filter(wish => wish.year === currentYearId);
-    const otherWishes = currentWishes.filter(wish => !currentWishesFiltered.includes(wish));
-    console.log("CurrentWish ",currentWishesFiltered)
-    console.log(otherWishes)
+    const extractNumberFromUrl = (url) => {
+        const matches = url.match(/\/(\d+)$/);
+        return matches ? parseInt(matches[1], 10) : NaN;
+    };
+
+    const wishesWithNumericYear = wishes.filter(wish => !isNaN(extractNumberFromUrl(wish.year)));
+    const maxYear = Math.max(...wishesWithNumericYear.map(wish => extractNumberFromUrl(wish.year)));
+    const currentWishesFiltered = wishesWithNumericYear.filter(wish => extractNumberFromUrl(wish.year) === maxYear);
+    const otherWishes = wishesWithNumericYear.filter(wish => extractNumberFromUrl(wish.year) !== maxYear);
 
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -257,7 +259,7 @@ function Repartition() {
                     </tr>
                 ) : (
                     <>
-                        {otherWishes.map(wish => (
+                        {currentWishesFiltered.map(wish => (
                             <tr key={wish.id}>
                                 <td>
                                     {wish.subjectName ? (
