@@ -284,16 +284,19 @@ export const getCurrentWishYear = async () => {
         const response = await fetch(apiUrl);
         const data = await response.json();
 
-        console.log("Raw data:", data); // Vérifier la structure brute des données reçues
+        console.log("Raw data:", data);
 
-        const currentWish = data["hydra:member"].find(wish => wish.year !== true);
-        console.log("Test", data["hydra:member"].find(wish => wish.year !== true))
+        // Sort wishes based on the 'year' field in descending order
+        const sortedWishes = data["hydra:member"].sort((a, b) => b.year - a.year);
 
-        console.log("Current wish:", currentWish); // Vérifier le souhait actuel
+        console.log("Sorted wishes:", sortedWishes);
 
-        if (currentWish) {
-            const currentWishYear = currentWish.year; // Assurez-vous que le champ s'appelle correctement
-            console.log("Current wish year:", currentWishYear);
+        // Get the 'year' value of the wish with the highest 'year' value
+        const currentWishYear = sortedWishes.length > 0 ? sortedWishes[0].year : null;
+
+        console.log("Current wish year:", currentWishYear);
+
+        if (currentWishYear !== null) {
             return currentWishYear;
         } else {
             console.error("Aucun souhait pour l'année en cours n'a été trouvé.");

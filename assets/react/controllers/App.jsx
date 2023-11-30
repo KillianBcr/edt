@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Group from "../components/GroupDetail";
 import SemesterDetail from "../components/SemesterDetail";
+import Graph from "../components/Graph";
 
 function App() {
     return (
@@ -20,6 +21,9 @@ function App() {
 
                 <Route path="/">
                     <Repartition/>
+                </Route>
+                <Route path="/">
+                    <Graph/>
                 </Route>
                 <Route path="/react/semesters">
                     <Semesterlist/>

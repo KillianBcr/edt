@@ -56,7 +56,7 @@ function WishForm({ subjectId, onWishAdded, userData }) {
             year: `/api/years/${currentYearId}`,
         };
 
-        console.log("formData", formData);
+        console.log("formData",formData)
 
         fetch('/api/wishes', {
             method: 'POST',
@@ -95,7 +95,6 @@ function WishForm({ subjectId, onWishAdded, userData }) {
                 });
             });
     };
-
 
 
     return (
