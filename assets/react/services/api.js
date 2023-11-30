@@ -158,14 +158,18 @@ export function fetchWeeks() {
 
 export const fetchWishesForUser = async (userId) => {
     try {
-        const response = await fetch(`${BASE_URL}/wishes?userId=${userId}`, { credentials: "include" });
+        const response = await fetch(`${BASE_URL}/wishes`, { credentials: "include" });
         const data = await response.json();
-        return data;
+
+        const filteredWishes = data['hydra:member'].filter((wish) => wish.wishUser === `/api/users/${userId}`);
+
+        return filteredWishes;
     } catch (error) {
         console.error('Error in fetchWishesForUser:', error);
         throw error;
     }
 };
+
 
 export const getSubjectName = async (subjectId) => {
     try {
