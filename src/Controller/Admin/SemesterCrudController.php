@@ -30,12 +30,16 @@ class SemesterCrudController extends AbstractCrudController
             IdField::new('id')
                 ->hideOnForm()
                 ->setLabel('Identifiant'),
+
             TextField::new('name')
                 ->setLabel('Nom'),
+
             DateTimeField::new('startDate')
                 ->setLabel('Date de début'),
+
             DateTimeField::new('endDate')
                 ->setLabel('Date de fin'),
+
             CollectionField::new('periods')
                 ->setLabel('Périodes'),
         ];

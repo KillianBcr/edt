@@ -10,8 +10,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CallbackField;
-
 
 class SubjectCrudController extends AbstractCrudController
 {
@@ -32,19 +30,23 @@ class SubjectCrudController extends AbstractCrudController
         return [
             IdField::new('id')
                 ->hideOnForm(),
+
             TextField::new('name'),
+
             DateTimeField::new('firstWeek')
                 ->hideOnIndex(),
+
             DateTimeField::new('lastWeek')
                 ->hideOnIndex(),
+
             AssociationField::new('subjectCode')
                 ->autocomplete()
                 ->setRequired(true)
                 ->setLabel('Code de la matière')
                 ->formatValue(fn ($value, $entity) => $entity->getSubjectCode()->getCode())
-                ->hideOnForm(),
+                ->onlyOnIndex(),
+
             IntegerField::new('hoursTotal'),
         ];
     }
 }
-
