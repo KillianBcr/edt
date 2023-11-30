@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
@@ -18,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new Get(),
+        new GetCollection(),
         new Post(
             security: "is_granted('ROLE_ADMIN')",
         ),
@@ -60,15 +62,23 @@ class Year
     private ?int $endYear = null;
 
     #[ORM\Column(length: 20)]
-    #[Groups(['get_Year'])]
+    #[Groups(['get_Year', 'get_Subject'])]
     private ?string $academicYear = null;
 
     #[ORM\OneToMany(mappedBy: 'academicYear', targetEntity: Subject::class)]
     private Collection $subjects;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['get_Year', 'get_Semester', 'get_Subject'])]
+    private ?bool $currentYear = null;
+
+    #[ORM\OneToMany(mappedBy: 'year', targetEntity: Wish::class)]
+    private Collection $wishes;
+
     public function __construct()
     {
         $this->subjects = new ArrayCollection();
+        $this->wishes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +149,48 @@ class Year
             // set the owning side to null (unless already changed)
             if ($subject->getAcademicYear() === $this) {
                 $subject->setAcademicYear(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isCurrentYear(): ?bool
+    {
+        return $this->currentYear;
+    }
+
+    public function setCurrentYear(?bool $currentYear): static
+    {
+        $this->currentYear = $currentYear;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Wish>
+     */
+    public function getWishes(): Collection
+    {
+        return $this->wishes;
+    }
+
+    public function addWish(Wish $wish): static
+    {
+        if (!$this->wishes->contains($wish)) {
+            $this->wishes->add($wish);
+            $wish->setYear($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWish(Wish $wish): static
+    {
+        if ($this->wishes->removeElement($wish)) {
+            // set the owning side to null (unless already changed)
+            if ($wish->getYear() === $this) {
+                $wish->setYear(null);
             }
         }
 

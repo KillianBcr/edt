@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Wish History{% endblock %}
+
+{% block body %}
+    <h1>Wish History</h1>
+
+    <form method="get" action="{{ path('app_wish_history') }}">
+        <label for="academicYear">Année académique :</label>
+        <select name="academicYear" id="academicYear">
+            {% for year in academicYears %}
+                <option value="{{ year }}" {% if year == selectedAcademicYear %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filtrer</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Enseignant</th>
+            <th>Matières</th>
+            <th>Groupes choisis</th>
+            <th>Statut</th>
+            <th>Année académique</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for wishGroup in wishesByYear %}
+            {% set wish = wishGroup[0] %}
+
+            {% set academicYear = wishGroup['academicYear'] %}
+            {% set firstname = wishGroup['firstname'] %}
+            {% set lastname = wishGroup['lastname'] %}
+
+
+            <tr>
+                <td>{{ firstname }} {{ lastname }}</td>
+                <td>{{ wish.subjectId.name }}</td>
+                <td>{{ wish.chosenGroups }}</td>
+                <td>{{ wish.isAccepted ? 'Oui' : 'Non' }}</td>
+                <td>{{ academicYear }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

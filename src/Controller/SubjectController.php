@@ -46,18 +46,6 @@ class SubjectController extends AbstractController
                 $spreadsheet = IOFactory::load($file->getPathname());
                 $entityManager = $this->registry->getManagerForClass(Subject::class);
 
-                $groupRepository = $entityManager->getRepository(Group::class);
-                $groupRepository->createQueryBuilder('g')
-                    ->delete()
-                    ->getQuery()
-                    ->execute();
-
-                $subjectRepository = $entityManager->getRepository(Subject::class);
-                $subjectRepository->createQueryBuilder('s')
-                    ->delete()
-                    ->getQuery()
-                    ->execute();
-
                 $allData = [];
 
                 $worksheets = iterator_to_array($spreadsheet->getWorksheetIterator());
@@ -65,18 +53,41 @@ class SubjectController extends AbstractController
 
                 $existingYear = $entityManager->getRepository(Year::class)->findOneBy([
                     'startYear' => $startYear,
-                    'endYear' => $endYear,
                 ]);
+
+                if ($existingYear) {
+                    $subjectsToDelete = $entityManager->getRepository(Subject::class)->findBy([
+                        'academicYear' => $existingYear,
+                    ]);
+
+                    foreach ($subjectsToDelete as $subjectToDelete) {
+                        $entityManager->remove($subjectToDelete);
+                    }
+
+                    $entityManager->flush();
+                }
 
                 if ($existingYear) {
                     $year = $existingYear;
                 } else {
-                    $year = new Year();
-                    $year->setStartYear($startYear);
-                    $year->setEndYear($endYear);
-                    $year->setAcademicYear($startYear.'-'.$endYear);
-                    $entityManager->persist($year);
+                    $existingYears = $entityManager->getRepository(Year::class)->findAll();
+
+                    $newYear = new Year();
+                    $newYear->setStartYear($startYear);
+                    $newYear->setEndYear($startYear + 1);
+                    $newYear->setAcademicYear($startYear.'-'.$startYear + 1);
+
+                    foreach ($existingYears as $existing) {
+                        $existing->setCurrentYear(null);
+                        $entityManager->persist($existing);
+                    }
+
+                    $newYear->setCurrentYear(true);
+
+                    $entityManager->persist($newYear);
                     $entityManager->flush();
+
+                    $year = $newYear;
                 }
 
                 foreach ($worksheets as $worksheet) {
@@ -147,6 +158,7 @@ class SubjectController extends AbstractController
                             $existingSubject = $entityManager->getRepository(Subject::class)->findOneBy([
                                 'name' => $name,
                                 'academicYear' => $year,
+                                'subjectCode' => $subjectCode
                             ]);
 
                             if ($existingSubject) {
@@ -166,20 +178,22 @@ class SubjectController extends AbstractController
                             $tabTags = explode(' / ', $tag);
 
                             foreach ($tabTags as $tag) {
-                                $searchTag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $tag]);
-                                if (null == $searchTag) {
-                                    if ('' != $tag) {
+                                if ('' != $tag) {
+                                    $searchTag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $tag]);
+
+                                    if (null == $searchTag) {
                                         $tagCreate = new Tag();
                                         $tagCreate->setName($tag);
                                         $tagCreate->addSubject($subject);
 
                                         $entityManager->persist($tagCreate);
                                         $entityManager->flush();
+                                    } else {
+                                        $searchTag->addSubject($subject);
                                     }
-                                } else {
-                                    $searchTag->addSubject($subject);
                                 }
                             }
+                            $entityManager->flush();
 
                             $subjectCode = $row[4];
 
@@ -210,6 +224,7 @@ class SubjectController extends AbstractController
                                         $week->setNumberHours($numberHours);
                                         $week->setWeekNumber($weekNumber);
                                         $entityManager->persist($week);
+                                        $entityManager->flush();
                                     }
                                     $group->addWeek($week);
                                     $subject->addWeek($week);

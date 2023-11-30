@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Subject;
+use App\Entity\User;
 use App\Entity\Wish;
 use App\Form\WishType;
 use App\Repository\WishRepository;
@@ -80,5 +81,22 @@ class WishController extends AbstractController
         $manager->flush();
 
         return $this->redirectToRoute('app_wish');
+    }
+
+    #[Route('/history', name: 'app_wish_history', methods: ['GET'])]
+    public function history(WishRepository $wishRepository, Request $request): Response
+    {
+        $academicYears = $wishRepository->findDistinctAcademicYears();
+
+        $selectedAcademicYear = $request->query->get('academicYear');
+        $wishesByYear = $wishRepository->findAllWishesGroupedByYear($selectedAcademicYear);
+
+        dump($wishesByYear);
+
+        return $this->render('wish/history.html.twig', [
+            'wishesByYear' => $wishesByYear,
+            'academicYears' => $academicYears,
+            'selectedAcademicYear' => $selectedAcademicYear,
+        ]);
     }
 }

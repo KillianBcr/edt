@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import "../../styles/repartition.css";
 import { Link } from 'wouter';
 import {
-    fetchWishes,
     getMe,
     deleteWish,
     updateWish,
     fetchWishesForUser,
     getSubjectName,
-    getGroupName
+    getGroupName,
+    getCurrentYear,
+    getCurrentYearId,
+    getCurrentWishYear, // Ajout de la nouvelle méthode
 } from "../services/api";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -43,6 +45,19 @@ function GroupLoader({ groupType, onGroupLoad }) {
     return null;
 }
 
+function YearLoader({ subjectId, onCurrentYearLoad }) {
+    useEffect(() => {
+        const loadYear = async () => {
+            const subjectCurrentYear = await getCurrentYear(subjectId);
+            onCurrentYearLoad(subjectCurrentYear);
+        };
+
+        loadYear();
+    }, [subjectId, onCurrentYearLoad]);
+
+    return null;
+}
+
 function Repartition() {
     const [wishes, setWishes] = useState([]);
     const [userId, setUserId] = useState(null);
@@ -51,13 +66,63 @@ function Repartition() {
     const [modifiedChosenGroups, setModifiedChosenGroups] = useState('');
     const [modifiedGroupName, setModifiedGroupName] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentYearId, setCurrentYearId] = useState(null);
     const wishesPerPage = 3;
+    const apiEndpoint = '/api';
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userData = await getMe();
+                if (userData) {
+                    const currentUserID = userData.id;
+                    setUserId(currentUserID);
+
+                    const wishData = await fetchWishesForUser(currentUserID);
+                    console.log("wishData", wishData);
+
+                    if (Array.isArray(wishData)) {
+                        setWishes(wishData);
+                        console.log("wishData2", wishData);
+                    } else {
+                        console.log("Invalid or missing 'hydra:member' property in wishData");
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+    useEffect(() => {
+        const fetchCurrentWishYear = async () => {
+            try {
+                const year = await getCurrentWishYear(apiEndpoint);
+                setCurrentYearId(year);
+            } catch (error) {
+                console.error('Error fetching current wish year:', error);
+            }
+        };
+
+        fetchCurrentWishYear();
+    }, []);
 
     const indexOfLastWish = currentPage * wishesPerPage;
     const indexOfFirstWish = indexOfLastWish - wishesPerPage;
+    console.log("wishes",wishes)
     const currentWishes = wishes.slice(indexOfFirstWish, indexOfLastWish);
 
+    const currentWishesFiltered = currentWishes.filter(wish => wish.year === currentYearId);
+    const otherWishes = currentWishes.filter(wish => !currentWishesFiltered.includes(wish));
+    console.log("CurrentWish ",currentWishesFiltered)
+    console.log(otherWishes)
+
+
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
 
     const handleOpen = (wishId) => {
         setSelectedWishId(wishId);
@@ -78,12 +143,31 @@ function Repartition() {
     };
 
     const handleSubjectLoad = (subjectId, subjectName) => {
-        setWishes((prevWishes) => prevWishes.map((wish) => (wish.subjectId === subjectId ? { ...wish, subjectName } : wish)));
+
+        setWishes((prevWishes) =>
+            prevWishes.map((wish) =>
+                wish.subjectId === subjectId
+                    ? { ...wish, subjectName }
+                    : wish
+            )
+        );
     };
+
 
     const handleGroupLoad = (groupType, groupName) => {
         setWishes((prevWishes) => prevWishes.map((wish) => (wish.groupeType === groupType ? { ...wish, groupName } : wish)));
     };
+
+    const handleYearLoad = (subjectId, subjectCurrentYear) => {
+        setWishes((prevWishes) =>
+            prevWishes.map((wish) =>
+                wish.subjectId === subjectId
+                    ? { ...wish, currentYear: subjectCurrentYear }
+                    : wish
+            )
+        );
+    };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -94,16 +178,16 @@ function Repartition() {
                     setUserId(currentUserID);
 
                     const wishData = await fetchWishesForUser(currentUserID);
-                    setWishes(wishData);
+                    if (wishData && Array.isArray(wishData['hydra:member'])) {
+                        setWishes(wishData['hydra:member']);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-
         fetchData();
     }, []);
-
 
     const handleDeleteWish = async (wishId) => {
         const confirmed = window.confirm("Voulez-vous vraiment supprimer ce vœu ?");
@@ -166,14 +250,14 @@ function Repartition() {
                 </thead>
                 <tbody>
                 {wishes.length === 0 ? (
-                            <tr>
-                                <td colSpan="4">
-                                    <Link to="/react/semesters/1" className="btn btn-primary">Ajouter des heures</Link>
-                                </td>
-                            </tr>
+                    <tr>
+                        <td colSpan="4">
+                            <Link to="/react/semesters/1" className="btn btn-primary">Ajouter des heures</Link>
+                        </td>
+                    </tr>
                 ) : (
                     <>
-                        {currentWishes.map(wish => (
+                        {otherWishes.map(wish => (
                             <tr key={wish.id}>
                                 <td>
                                     {wish.subjectName ? (
@@ -186,10 +270,17 @@ function Repartition() {
                                                     handleSubjectLoad(wish.subjectId, truncateSubjectName(subjectName))
                                                 }
                                             />
+                                            <YearLoader
+                                                subjectId={wish.subjectId}
+                                                onCurrentYearLoad={(subjectCurrentYear) =>
+                                                    handleYearLoad(wish.subjectId, subjectCurrentYear)
+                                                }
+                                            />
                                         </React.Suspense>
 
                                     )}
                                 </td>
+
                                 <td>
                                     {wish.chosenGroups} groupe(s) de {wish.groupName ? (
                                     wish.groupName
@@ -199,19 +290,20 @@ function Repartition() {
                                     </React.Suspense>
                                 )}
                                 </td>
+
                                 <td>
                                     {wish.isAccepted === true ? (
                                         <span className="badge bg-success font-weight-normal" style={{ fontSize: '1rem' }}>
-                                        Accepté
-                                    </span>
+                                                    Accepté
+                                                </span>
                                     ) : wish.isAccepted === false ? (
                                         <span className="badge bg-danger font-weight-normal" style={{ fontSize: '1rem' }}>
-                                        Refusé
-                                    </span>
+                                                    Refusé
+                                                </span>
                                     ) : (
                                         <span className="badge bg-warning font-weight-normal" style={{ fontSize: '1rem' }}>
-                                        En attente
-                                    </span>
+                                                    En attente
+                                                </span>
                                     )}
                                 </td>
                                 <td>
