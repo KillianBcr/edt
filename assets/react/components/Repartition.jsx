@@ -79,21 +79,28 @@ function Repartition() {
                     setUserId(currentUserID);
 
                     const wishData = await fetchWishesForUser(currentUserID);
-                    if (wishData && Array.isArray(wishData['hydra:member'])) {
-                        setWishes(wishData['hydra:member']);
+                    console.log("wishData", wishData);
+
+                    if (Array.isArray(wishData)) {
+                        setWishes(wishData);
+                        console.log("wishData2", wishData);
+                    } else {
+                        console.log("Invalid or missing 'hydra:member' property in wishData");
                     }
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
+
         fetchData();
     }, []);
+
 
     useEffect(() => {
         const fetchCurrentWishYear = async () => {
             try {
-                const year = await getCurrentWishYear(apiEndpoint); // Utilisation de la nouvelle méthode
+                const year = await getCurrentWishYear(apiEndpoint);
                 setCurrentYearId(year);
             } catch (error) {
                 console.error('Error fetching current wish year:', error);
@@ -105,10 +112,13 @@ function Repartition() {
 
     const indexOfLastWish = currentPage * wishesPerPage;
     const indexOfFirstWish = indexOfLastWish - wishesPerPage;
+    console.log("wishes",wishes)
     const currentWishes = wishes.slice(indexOfFirstWish, indexOfLastWish);
 
     const currentWishesFiltered = currentWishes.filter(wish => wish.year === currentYearId);
     const otherWishes = currentWishes.filter(wish => !currentWishesFiltered.includes(wish));
+    console.log("CurrentWish ",currentWishesFiltered)
+    console.log(otherWishes)
 
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);

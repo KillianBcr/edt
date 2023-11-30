@@ -286,8 +286,8 @@ export const getCurrentWishYear = async () => {
 
         console.log("Raw data:", data); // Vérifier la structure brute des données reçues
 
-        const currentWish = data["hydra:member"].find(wish => wish.currentYear !== true);
-        console.log("Test", data["hydra:member"].find(wish => wish.year === true || wish.year === null))
+        const currentWish = data["hydra:member"].find(wish => wish.year !== true);
+        console.log("Test", data["hydra:member"].find(wish => wish.year !== true))
 
         console.log("Current wish:", currentWish); // Vérifier le souhait actuel
 
