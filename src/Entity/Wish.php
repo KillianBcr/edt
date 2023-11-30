@@ -57,6 +57,7 @@ class Wish
     private ?Subject $subjectId = null;
 
     #[ORM\ManyToOne(inversedBy: 'wish')]
+    #[Groups(['get_Wish', 'set_Wish'])]
     private ?User $wishUser = null;
 
     #[ORM\Column(nullable: true)]

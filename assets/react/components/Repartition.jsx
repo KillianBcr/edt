@@ -94,16 +94,16 @@ function Repartition() {
                     setUserId(currentUserID);
 
                     const wishData = await fetchWishesForUser(currentUserID);
-                    if (wishData && Array.isArray(wishData['hydra:member'])) {
-                        setWishes(wishData['hydra:member']);
-                    }
+                    setWishes(wishData);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
+
         fetchData();
     }, []);
+
 
     const handleDeleteWish = async (wishId) => {
         const confirmed = window.confirm("Voulez-vous vraiment supprimer ce vœu ?");
