@@ -1,0 +1,18 @@
+stages:
+  - test
+test:
+  stage: test
+  script:
+    - composer install
+    - npm ci
+    - npm run build
+    - composer test
+  tags:
+    - php8.1
+    - composer
+    - npm
+    - node.js
+
+  artifacts:
+    paths:
+      - tests/_output
