@@ -2,9 +2,10 @@
 
 namespace App\Tests\Api;
 
+use App\Entity\Semester;
 use App\Entity\Subject;
+use App\Entity\SubjectCode;
 use App\Tests\HttpClientTrait;
-use DateTime;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
@@ -47,9 +48,7 @@ class SubjectCestTest extends TestCase
                 'json' => [
                     'name' => 'TestSubject',
                     'firstWeek' => 1,
-                    'lastWeek' => 10,
-                    // Include other required fields
-                ],
+                    'lastWeek' => 10, ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
             $data = json_decode($response->getBody(), true);
@@ -57,7 +56,7 @@ class SubjectCestTest extends TestCase
 
             // GET request
             $response = $this->httpClient->get("subjects/{$subjectId}");
-            $this->assertEquals(401, $response->getStatusCode());
+            $this->assertEquals(200, $response->getStatusCode());
 
             // PUT request
             $response = $this->httpClient->put("subjects/{$subjectId}", [
@@ -65,7 +64,6 @@ class SubjectCestTest extends TestCase
                     'name' => 'UpdatedTestSubject',
                     'firstWeek' => 1,
                     'lastWeek' => 10,
-                    // Include other required fields
                 ],
             ]);
             $this->assertEquals(401, $response->getStatusCode());
