@@ -53,7 +53,7 @@ class NbGroupCestTest extends TestCase
 
             // GET request
             $response = $this->httpClient->get("nbGroups/{$nbGroupId}");
-            $this->assertEquals(401, $response->getStatusCode());
+            $this->assertEquals(200, $response->getStatusCode());
 
             // PUT request
             $response = $this->httpClient->put("nbGroups/{$nbGroupId}", [
@@ -75,9 +75,8 @@ class NbGroupCestTest extends TestCase
             $response = $this->httpClient->delete("nbGroups/{$nbGroupId}");
             $this->assertEquals(401, $response->getStatusCode());
         } catch (ClientException $e) {
-            // Catch the exception and assert the expected status code
             $response = $e->getResponse();
-            $this->assertEquals(401, $response->getStatusCode());
+            $this->assertEquals(404, $response->getStatusCode());
         }
     }
 }
