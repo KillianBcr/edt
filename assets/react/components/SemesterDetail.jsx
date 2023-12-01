@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSemester, fetchNbGroup, fetchGroups, getMe, getSubjectCode } from '../services/api';
+import {getSemester, fetchNbGroup, fetchGroups, getMe, getSubjectTag} from '../services/api';
 import { useRoute } from 'wouter';
 import WishForm from './WishForm';
 import "../../styles/semesterDetail.css";
@@ -12,15 +12,11 @@ function Semester({ selectedTags }) {
     const [groups, setGroups] = useState([]);
     const [nbGroups, setNbGroups] = useState([]);
     const [wishesBySubject, setWishesBySubject] = useState({});
-    const [subjectCodes, setSubjectCodes] = useState([]);
 
     useEffect(() => {
         (async () => {
             try {
                 const fetchedGroupsResponse = await fetchGroups();
-                //console.log('Fetched Groups:', fetchedGroupsResponse);
-
-                // Assure-toi que les données sont bien encapsulées dans un objet
                 const fetchedGroups = fetchedGroupsResponse['hydra:member'] || [];
                 setGroups(fetchedGroups);
 
@@ -89,10 +85,12 @@ function Semester({ selectedTags }) {
                     return subject;
                 });
 
-                setSemester({
+                setSubjects(updatedSubjects);
+
+                /*setSemester({
                     ...semester,
                     subjects: updatedSubjects,
-                });
+                });*/
             });
         }
     }, [semester, tagsData]);
@@ -167,11 +165,12 @@ function Semester({ selectedTags }) {
         }
     }
 
+    /*
     useEffect(() => {
         if (semester) {
             Promise.all(semester.subjects.map(async (subject) => {
-                const subjectCodeData = await fetchSubjectCodeDetails(subject.subjectCode);
-                const subjectCode = subjectCodeData.code;
+                console.log(subject.subjectCode);
+                const subjectCode = subject.subjectCode.code;
                 return { ...subject, subjectCode };
             })).then(updatedSubjects => {
                 setSemester(prevSemester => ({
@@ -181,6 +180,8 @@ function Semester({ selectedTags }) {
             });
         }
     }, [semester]);
+*/
+
 
     return (
         <div>
@@ -199,16 +200,14 @@ function Semester({ selectedTags }) {
                             const subjectCodeId = subject.subjectCode.code;
                             const currentYear = subject.academicYear.currentYear;
 
-                            const resolvedSubjectCodeId = subjectCodeId;
-
                             if (currentYear === true || currentYear === 1) {
                                 return (
                                     <li key={subject['@id']} className="semester-li">
-                                        <h2 className={"subjectName"}>{subject.subjectCode + ' - ' + subject.name}</h2>
+                                        <h2 className={"subjectName"}>{subjectCodeId + ' - ' + subject.name}</h2>
                                         {subject.tags && subject.tags.length > 0 && (
                                             <div className="tag-container">
                                                 {subject.tags.map((tag, index) => (
-                                                    <span key={index} className="tag">{tag.name}</span> // Affichage des tags
+                                                    <span key={index} className="tag">{tag.name}</span>
                                                 ))}
                                             </div>
                                         )}
@@ -220,7 +219,6 @@ function Semester({ selectedTags }) {
                                                             .map((group) => (
                                                                 <ul key={group.id}>
                                                                     <li className="groups">
-                                                                        {group.type}
                                                                         {nbGroups === null ? (
                                                                             'Aucun Nombre De Groupe Trouvé'
                                                                         ) : (
@@ -232,8 +230,20 @@ function Semester({ selectedTags }) {
                                                                                     } else {
                                                                                         const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
                                                                                         const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
+                                                                                        var color = "black";
+                                                                                        var picto = "";
+                                                                                        if (count > filteredNbGroup.nbGroup){
+                                                                                            color = "red";
+                                                                                            picto = "🔴";
+                                                                                        }else if (count < filteredNbGroup.nbGroup){
+                                                                                            color = "orange";
+                                                                                            picto = "🟠";
+                                                                                        }else{
+                                                                                            color = "green"
+                                                                                            picto = "🟢";
+                                                                                        }
                                                                                         return (
-                                                                                            <span key={`${filteredNbGroup.id}`}>| {count}/{filteredNbGroup.nbGroup}</span>
+                                                                                            <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup}</span>
                                                                                         );
                                                                                     }
                                                                                 })

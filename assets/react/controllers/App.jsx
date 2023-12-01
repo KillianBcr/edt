@@ -1,14 +1,9 @@
 import React from 'react';
 import {Link, Route, Router} from 'wouter';
 import Semesterlist from "../components/SemesterList";
-import Grouplist from "../components/GroupList";
-import Semester from "../components/SemesterDetail";
 import  Me from "../components/Me";
 import  Repartition from "../components/Repartition";
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Group from "../components/GroupDetail";
-import SemesterDetail from "../components/SemesterDetail";
 import Graph from "../components/Graph";
 import {Wish} from "../components/Wish";
 
