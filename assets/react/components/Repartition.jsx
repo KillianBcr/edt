@@ -10,7 +10,7 @@ import {
     getGroupName,
     getCurrentYear,
     getCurrentYearId,
-    getCurrentWishYear, // Ajout de la nouvelle méthode
+    getCurrentWishYear,
 } from "../services/api";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -309,8 +309,28 @@ function Repartition() {
                                     )}
                                 </td>
                                 <td>
-                                    <button id="repartition_btn" className="btn btn-primary" onClick={() => handleOpen(wish.id)}>Modifier</button>
-                                    <button id="repartition_btn" className="btn btn-danger" onClick={() => handleDeleteWish(wish.id)}>Supprimer</button>
+                                    {wish.isAccepted === true ? (
+                                        // Afficher du texte ou un élément indiquant qu'il est accepté et ne peut pas être modifié ou supprimé
+                                        <span>Accepté - Non modifiable</span>
+                                    ) : (
+                                        // Sinon, afficher les boutons de modification et de suppression
+                                        <>
+                                            <button
+                                                id="repartition_btn"
+                                                className="btn btn-primary"
+                                                onClick={() => handleOpen(wish.id)}
+                                            >
+                                                Modifier
+                                            </button>
+                                            <button
+                                                id="repartition_btn"
+                                                className="btn btn-danger"
+                                                onClick={() => handleDeleteWish(wish.id)}
+                                            >
+                                                Supprimer
+                                            </button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))}
