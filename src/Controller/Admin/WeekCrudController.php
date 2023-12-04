@@ -26,12 +26,11 @@ class WeekCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id')
-                ->hideOnForm(),
-            IntegerField::new('weekNumber'),
-            IntegerField::new('numberHours'),
-            CollectionField::new('Subject')
-                ->hideOnIndex(),
+            IdField::new('id')->hideOnForm()->setLabel('ID'),
+            IntegerField::new('weekNumber')->setLabel('Numéro de semaine'),
+            IntegerField::new('numberHours')->setLabel('Nombre d\'heures'),
+            CollectionField::new('subject')->hideOnIndex()->setLabel('Matières'),
+            CollectionField::new('groups')->hideOnIndex()->setLabel('Groupes'),
         ];
     }
 }

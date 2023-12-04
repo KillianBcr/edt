@@ -28,11 +28,20 @@ class SemesterCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')
-                ->hideOnForm(),
-            TextField::new('name'),
-            DateTimeField::new('startDate'),
-            DateTimeField::new('endDate'),
-            CollectionField::new('periods'),
+                ->hideOnForm()
+                ->setLabel('Identifiant'),
+
+            TextField::new('name')
+                ->setLabel('Nom'),
+
+            DateTimeField::new('startDate')
+                ->setLabel('Date de début'),
+
+            DateTimeField::new('endDate')
+                ->setLabel('Date de fin'),
+
+            CollectionField::new('periods')
+                ->setLabel('Périodes'),
         ];
     }
 }

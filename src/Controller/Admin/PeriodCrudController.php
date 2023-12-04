@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Period;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -28,13 +29,19 @@ class PeriodCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')
-                ->hideOnForm(),
-            TextField::new('name'),
+                ->hideOnForm()
+                ->setLabel('Identifiant'),
+            TextField::new('name')
+                ->setLabel('Nom'),
             TextField::new('description')
+                ->setLabel('Description')
                 ->hideOnIndex(),
-            DateTimeField::new('weekStart'),
-            DateTimeField::new('weekEnd'),
-            CollectionField::new('semester')
+            DateTimeField::new('weekStart')
+                ->setLabel('Début de la semaine'),
+            DateTimeField::new('weekEnd')
+                ->setLabel('Fin de la semaine'),
+            ArrayField::new('semester')
+                ->setLabel('Semestre')
                 ->hideOnIndex(),
         ];
     }
