@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { getSemester, fetchNbGroup, fetchGroups, getMe, getSubjectCode } from '../services/api';
+import {getSemester, fetchNbGroup, fetchGroups, getMe, getSubjectTag} from '../services/api';
 import { useRoute } from 'wouter';
 import WishForm from './WishForm';
 import "../../styles/semesterDetail.css";
 
-function Semester() {
+function Semester({ selectedTags }) {
     const [semester, setSemester] = useState(null);
+    const [subjects, setSubjects] = useState(null);
     const [, params] = useRoute('/react/semesters/:id');
     const [userData, setUserData] = useState(null);
     const [groups, setGroups] = useState([]);
     const [nbGroups, setNbGroups] = useState([]);
     const [wishesBySubject, setWishesBySubject] = useState({});
-    const [subjectCodes, setSubjectCodes] = useState([]);
 
     useEffect(() => {
         (async () => {
             try {
                 const fetchedGroupsResponse = await fetchGroups();
-                //console.log('Fetched Groups:', fetchedGroupsResponse);
-
-                // Assure-toi que les données sont bien encapsulées dans un objet
                 const fetchedGroups = fetchedGroupsResponse['hydra:member'] || [];
                 setGroups(fetchedGroups);
 
@@ -36,6 +33,7 @@ function Semester() {
             }
         })();
     }, []);
+    const [tagsData, setTagsData] = useState([]);
 
     useEffect(() => {
         getSemester(params.id).then((data) => {
@@ -46,46 +44,53 @@ function Semester() {
         });
     }, [params.id]);
 
-    const getWishesCountBySubject = async () => {
-        try {
-            const allWishesResponse = await fetch('/api/wishes');
-            if (!allWishesResponse.ok) {
-                throw new Error('La requête pour les souhaits a échoué.');
-            }
-
-            const allWishes = await allWishesResponse.json();
-            const wishesBySubjectData = {};
-
-            if (Array.isArray(allWishes['hydra:member'])) {
-                for (const wish of allWishes['hydra:member']) {
-                    const groupeType = wish.groupeType;
-                    const chosenGroups = wish.chosenGroups || 0;
-
-                    if (!wishesBySubjectData[groupeType]) {
-                        wishesBySubjectData[groupeType] = chosenGroups;
-                    } else {
-                        wishesBySubjectData[groupeType] += chosenGroups;
-                    }
-                }
-
-                setWishesBySubject(wishesBySubjectData);
-            } else {
-                console.error("hydra:member n'est pas un tableau :", allWishes['hydra:member']);
-            }
-        } catch (error) {
-            console.error("Une erreur s'est produite lors du traitement des souhaits :", error);
-        }
-    };
-
     useEffect(() => {
-        if (semester !== null) {
-            getWishesCountBySubject()
-                .then(() => {})
-                .catch(error => {
-                    console.error("Une erreur s'est produite :", error);
+        if (semester) {
+            const tagUrls = semester.subjects.reduce((urls, subject) => {
+                subject.tags.forEach((tagUrl) => {
+                    if (typeof tagUrl === "string" && !urls.includes(tagUrl)) {
+                        urls.push(tagUrl);
+                    }
                 });
+                return urls;
+            }, []);
+
+            const tagPromises = tagUrls.map(tagUrl => {
+                const cachedTag = tagsData.find(tag => tag['@id'] === tagUrl);
+                if (cachedTag) {
+                    return Promise.resolve(cachedTag);
+                } else {
+                    return getSubjectTag(tagUrl);
+                }
+            });
+
+            Promise.all(tagPromises).then((tags) => {
+                const tagMap = new Map();
+
+                tags.forEach(tag => {
+                    tagMap.set(tag['@id'], tag);
+                    if (!tagsData.some(existingTag => existingTag['@id'] === tag['@id'])) {
+                        setTagsData(prevTagsData => [...prevTagsData, tag]);
+                    }
+                });
+
+                const updatedSubjects = semester.subjects.map((subject) => {
+                    subject.tags = subject.tags.map((tagUrl) => {
+                        if (typeof tagUrl === "string" && tagMap.has(tagUrl)) {
+                            return tagMap.get(tagUrl);
+                        }
+                        return tagUrl;
+                    });
+
+                    return subject;
+                });
+
+                setSubjects(updatedSubjects);
+            });
         }
-    }, [semester]);
+    }, [semester, tagsData]);
+
+
 
     const fetchWishesAndUpdateCount = async () => {
         try {
@@ -155,37 +160,35 @@ function Semester() {
         }
     }
 
-    useEffect(() => {
-        if (semester) {
-            Promise.all(semester.subjects.map(async (subject) => {
-                const subjectCodeData = await fetchSubjectCodeDetails(subject.subjectCode);
-                const subjectCode = subjectCodeData.code;
-                return { ...subject, subjectCode };
-            })).then(updatedSubjects => {
-                setSemester(prevSemester => ({
-                    ...prevSemester,
-                    subjects: updatedSubjects
-                }));
-            });
-        }
-    }, [semester]);
 
     return (
         <div>
-            {semester === null ? 'Loading...' : (
+            {semester === null || subjects === null ? 'Loading...' : (
                 <div className={"subjectList"}>
                     <ul>
-                        {semester.subjects.map((subject) => {
+                        {subjects
+                            .filter((subject) => {
+                                if (selectedTags.length === 0) {
+                                    return true;
+                                }
+                                return selectedTags.some((selectedTag) => subject.tags.some(subjectTag => selectedTag.id === subjectTag.id))
+                            })
+                            .map((subject) => {
                             const subjectId = subject['@id'].split('/').pop();
-                            const subjectCodeId =  subject.subjectCode.code;
+                            const subjectCodeId = subject.subjectCode.code;
                             const currentYear = subject.academicYear.currentYear;
-
-                            const resolvedSubjectCodeId = subjectCodeId;
 
                             if (currentYear === true || currentYear === 1) {
                                 return (
                                     <li key={subject['@id']} className="semester-li">
-                                        <h2 className={"subjectName"}>{resolvedSubjectCodeId + ' - ' + subject.name}</h2>
+                                        <h2 className={"subjectName"}>{subjectCodeId + ' - ' + subject.name}</h2>
+                                        {subject.tags && subject.tags.length > 0 && (
+                                            <div className="tag-container">
+                                                {subject.tags.map((tag, index) => (
+                                                    <span key={index} className="tag">{tag.name}</span>
+                                                ))}
+                                            </div>
+                                        )}
                                         {(userData && userData.roles && (userData.roles.includes("ROLE_ADMIN") || userData.roles.includes("ROLE_ENSEIGNANT"))) ? (
                                             <div>
                                                 <div className="groupe-container">
@@ -194,7 +197,6 @@ function Semester() {
                                                             .map((group) => (
                                                                 <ul key={group.id}>
                                                                     <li className="groups">
-
                                                                         {nbGroups === null ? (
                                                                             'Aucun Nombre De Groupe Trouvé'
                                                                         ) : (
@@ -206,9 +208,8 @@ function Semester() {
                                                                                     } else {
                                                                                         const groupId = (typeof filteredNbGroup.groups === 'string') ? filteredNbGroup.groups.split('/').pop() : filteredNbGroup.groups;
                                                                                         const count = wishesBySubject && wishesBySubject[groupId] ? wishesBySubject[groupId] : 0;
-
-                                                                                            var color = "black";
-                                                                                    var picto = "";
+                                                                                        var color = "black";
+                                                                                        var picto = "";
                                                                                         if (count > filteredNbGroup.nbGroup){
                                                                                             color = "red";
                                                                                             picto = "🔴";
@@ -221,7 +222,7 @@ function Semester() {
                                                                                         }
                                                                                         return (
                                                                                             <span key={`${filteredNbGroup.id}`} style={{ color: `${color}` }}>{group.type} | {count}/{filteredNbGroup.nbGroup}</span>
-                                                                                    );
+                                                                                        );
                                                                                     }
                                                                                 })
                                                                         )}
@@ -232,9 +233,7 @@ function Semester() {
                                                 </div>
                                                 <div className="Postuler-container">
                                                     {userData && (
-                                                        <WishForm subjectId={`/api/subjects/${subjectId}`}
-                                                                  onWishAdded={fetchWishesAndUpdateCount}
-                                                                  userData={userData}/>
+                                                        <WishForm subjectId={`/api/subjects/${subjectId}`} onWishAdded={fetchWishesAndUpdateCount} userData={userData} />
                                                     )}
                                                 </div>
                                             </div>
@@ -253,3 +252,4 @@ function Semester() {
 }
 
 export default Semester;
+

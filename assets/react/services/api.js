@@ -31,7 +31,7 @@ export const fetchGroupsBySubject = async (subjectId) => {
         return data['hydra:member'];
     } catch (error) {
         console.error('Error in fetchGroupsBySubject:', error);
-        throw error; // Ajoute cette ligne pour propager l'erreur
+        throw error;
     }
 };
 export function getMe()
@@ -91,6 +91,14 @@ export async function deleteWish(wishId) {
     } else {
         throw new Error('Erreur lors de la suppression du vœu');
     }
+}
+
+export function getSubjectTag(id) {
+    const isFullUrl = id.startsWith(BASE_URL + '/tags/');
+    const url = isFullUrl ? id : `${BASE_URL}/tags/${id}`;
+    return fetch(url).then((response) =>
+        response.ok ? response.json() : Promise.resolve(null),
+    );
 }
 
 export function getUserRole(id) {
@@ -313,3 +321,90 @@ export const getCurrentWishYear = async () => {
 
 
 
+export function addTagToDatabase(tagName) {
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: tagName }),
+    };
+
+    return fetch(`${BASE_URL}/tags`, requestOptions)
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject('Failed to add tag to the database');
+        })
+        .catch((error) => {
+            console.error('Error adding tag:', error);
+            return Promise.reject('Failed to add tag to the database');
+        });
+}
+
+export function deleteTagFromDatabase(tagId) {
+    const requestOptions = {
+        method: 'DELETE',
+    };
+
+    return fetch(`${BASE_URL}/tags/${tagId}`, requestOptions)
+        .then((response) => {
+            if (response.ok) {
+                console.log(`Tag with ID ${tagId} deleted successfully`);
+            } else {
+                console.error('Error deleting tag:', response.status, response.statusText);
+                return Promise.reject('Failed to delete tag from the database');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            return Promise.reject('Failed to delete tag from the database');
+        });
+}
+
+export function fetchTags() {
+    return fetch(`${BASE_URL}/tags`).then((response) =>
+        response.ok ? response.json() : Promise.resolve(null),
+    );
+}
+
+export async function addTagToSubject(tagId, subjectId) {
+    try {
+        const response = await fetch(`${BASE_URL}/subject/addTag/${subjectId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/merge-patch+json',
+            },
+            body: JSON.stringify({
+                tag: tagId,
+                semesterId: subjectId,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to add tag to subject.');
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        throw new Error(`Error adding tag to subject: ${error.message}`);
+    }
+}
+
+export async function fetchSubjectsForSemester(semestersId) {
+    try {
+        const response = await fetch(`${BASE_URL}/semesters/${semestersId}`);
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des matières pour le semestre.');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des matières pour le semestre :', error);
+        throw error;
+    }
+}

@@ -87,10 +87,29 @@ form {
     display: flex;
     margin-top: 10px;
 }
-form {
-    display: flex;
-    margin-top: 10px;
+
+.tag {
+    display: inline-block;
+    color: #fff;
+    padding: 4px 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 10px;
 }
+
+.tag:nth-child(1) {
+    background-color: red;
+}
+
+.tag:nth-child(2) {
+    background-color: green;
+}
+
+.tag:last-child {
+    margin-right: 0;
+}
+
 
 @media screen and (max-width: 800px) {
     .semester-li {

@@ -8,7 +8,7 @@
     margin-left: 20%;
     margin-right: 20%;
     border-radius: 20px;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
 }
 
 .semesterList div {
@@ -26,7 +26,123 @@
 }
 
 .semesterList a:hover {
-    background-color: gray;
+    background-color: grey;
     border-radius: 10px;
     color: white;
 }
+
+.semester-li {
+    border: 3px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px;
+    list-style-type: none;
+}
+
+.tagsButton {
+    margin-left: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tagsButton button {
+    background-color: #0066FF;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    line-height: 20px;
+    list-style: none;
+    outline: none;
+    padding: 10px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: color 100ms;
+    vertical-align: baseline;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 5px;
+}
+
+.tagsButton button:hover {
+    background-color: #0d5aa7;
+}
+
+h2 {
+    margin-left: 20px;
+    margin-top: 50px;
+}
+.groupe {
+    background-color: #F2F2F2 ;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+.Postuler-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.Postuler{
+    background-color: #0066FF;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    line-height: 20px;
+    list-style: none;
+    outline: none;
+    padding: 10px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transition: color 100ms;
+    vertical-align: baseline;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 5px;
+}
+
+.modalTitle{
+    display: flex;
+    justify-content: center;
+}
+form input, form select{
+    background-color: #D9D9D9;
+    border-radius: 8px;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    padding-left: 1%;
+    border-width: 0 ;
+    font-size: 16px;
+}
+.modal button {
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 1%;
+    width: 100px;
+}
+
+
+@media screen and (max-width: 800px) {
+    html{
+        font-size: 2em;
+    }
+    .semester-li {
+        height: 20%;
+    }
+}
+
