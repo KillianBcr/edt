@@ -86,11 +86,6 @@ function Semester({ selectedTags }) {
                 });
 
                 setSubjects(updatedSubjects);
-
-                /*setSemester({
-                    ...semester,
-                    subjects: updatedSubjects,
-                });*/
             });
         }
     }, [semester, tagsData]);
@@ -164,23 +159,6 @@ function Semester({ selectedTags }) {
             return [];
         }
     }
-
-    /*
-    useEffect(() => {
-        if (semester) {
-            Promise.all(semester.subjects.map(async (subject) => {
-                console.log(subject.subjectCode);
-                const subjectCode = subject.subjectCode.code;
-                return { ...subject, subjectCode };
-            })).then(updatedSubjects => {
-                setSemester(prevSemester => ({
-                    ...prevSemester,
-                    subjects: updatedSubjects
-                }));
-            });
-        }
-    }, [semester]);
-*/
 
 
     return (
